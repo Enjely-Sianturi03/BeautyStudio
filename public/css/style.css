@@ -1,0 +1,83 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f8f9fa, #e3e9f0);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-page {
+    width: 100%;
+    max-width: 420px;
+    margin: auto;
+    padding: 20px;
+}
+
+.login-card {
+    background: #fff;
+    padding: 40px 35px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.login-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.login-subtitle {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.form-control:focus {
+    border-color: #ff7b54;
+    box-shadow: 0 0 0 2px rgba(255, 123, 84, 0.2);
+    outline: none;
+}
+
+.btn-login {
+    width: 100%;
+    background: #ff7b54;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-login:hover {
+    background: #ff6430;
+}
+
+.register-text {
+    margin-top: 20px;
+    color: #555;
+}
+
+.register-text a {
+    color: #ff7b54;
+    text-decoration: none;
+}
+
+.register-text a:hover {
+    text-decoration: underline;
+}
