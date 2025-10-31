@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Artika Salon') }} - @yield('title', 'Modern Artistic Hair')</title>
+    <title>{{ config('app.name', 'Beauty Studio') }} - @yield('title', 'Modern Artistic Hair')</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,7 +42,7 @@
             <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
                 <a href="{{ route('home') }}" class="text-2xl font-serif font-bold text-gray-900 hover:text-gray-700 transition">
-                    ARTIKA SALON
+                    BEAUTY STUDIO
                 </a>
 
                 <!-- Desktop Menu -->
@@ -224,7 +224,7 @@
 
             <!-- Copyright -->
             <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
-                <p>&copy; {{ date('Y') }} Artika Salon. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} Beauty Studio. All rights reserved.</p>
             </div>
         </div>
     </footer>

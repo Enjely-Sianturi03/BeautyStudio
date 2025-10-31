@@ -6,7 +6,7 @@
 <!-- Hero Section -->
 <section class="relative h-screen">
     <div class="absolute inset-0">
-        <img src="{{ asset('images/hero-salon.jpg') }}" alt="Artika Salon" class="w-full h-full object-cover">
+        <img src="{{ asset('image/gambar1.jpeg') }}" alt="Artika Salon" class="w-full h-full object-cover">
         <div class="absolute inset-0 bg-gradient-to-b from-black/50 to-black/70"></div>
     </div>
 
@@ -165,15 +165,15 @@
 @endif
 
 <!-- Social Media Section -->
-<section class="py-20 bg-gradient-to-r from-purple-900 via-pink-900 to-purple-900 text-white">
+<section class="py-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white">
     <div class="container mx-auto px-4 text-center">
-        <h2 class="text-4xl md:text-5xl font-light mb-6">@artikahairspa</h2>
-        <p class="text-xl md:text-2xl mb-10 max-w-2xl mx-auto">
-            Follow us on Instagram for the latest updates, style inspiration, and exclusive offers
+        <h2 class="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight">#ArtikaHairSpa</h2>
+        <p class="text-xl md:text-2xl mb-10 max-w-3xl mx-auto text-gray-300">
+            Follow our journey on Instagram for the latest style inspiration, transformations, and exclusive seasonal offers.
         </p>
         <a href="https://instagram.com/artikahairspa" target="_blank" 
-           class="inline-block bg-white text-purple-900 px-10 py-4 rounded-full hover:shadow-2xl transition transform hover:scale-105 font-medium text-lg">
-            <i class="fab fa-instagram mr-3 text-2xl"></i> FOLLOW US ON INSTAGRAM
+            class="inline-block bg-pink-500 text-white px-12 py-4 rounded-full hover:bg-pink-600 transition duration-300 transform hover:scale-105 font-bold text-lg shadow-xl uppercase tracking-widest">
+            <i class="fab fa-instagram mr-3 text-2xl"></i> FOLLOW US NOW
         </a>
     </div>
 </section>
