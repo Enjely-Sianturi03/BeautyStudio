@@ -69,7 +69,7 @@
 </section>
 
 <!-- Gallery Preview Section -->
-@if($featuredGalleries->count() > 0)
+@if(isset($featuredGalleries) && $featuredGalleries->count() > 0)
 <section class="py-20 bg-white">
     <div class="container mx-auto px-4">
         <h2 class="text-4xl md:text-5xl font-light text-center mb-16">OUR WORK</h2>
@@ -100,7 +100,7 @@
 @endif
 
 <!-- Services Preview -->
-@if($services->count() > 0)
+@if(isset($services) && $services->count() > 0)
 <section class="py-20 bg-gray-900 text-white">
     <div class="container mx-auto px-4">
         <h2 class="text-4xl md:text-5xl font-light text-center mb-16">OUR SERVICES</h2>
@@ -133,7 +133,7 @@
 @endif
 
 <!-- Stylists Section -->
-@if($stylists->count() > 0)
+@if(isset($stylists) && $stylists->count() > 0)
 <section class="py-20 bg-white">
     <div class="container mx-auto px-4">
         <h2 class="text-4xl md:text-5xl font-light text-center mb-6">MEET OUR STYLISTS</h2>
