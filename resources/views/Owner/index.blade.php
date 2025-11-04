@@ -100,7 +100,6 @@
 
 @push('scripts')
 <script>
-    // Tambahkan script khusus untuk dashboard jika diperlukan (misalnya ChartJS)
-    // Untuk saat ini, asumsikan ChartJS di-load di sini atau di layout utama.
+    
 </script>
 @endpush
