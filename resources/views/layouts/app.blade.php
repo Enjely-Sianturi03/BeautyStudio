@@ -56,33 +56,53 @@
 
                         <!-- Dropdown Menu -->
                         <div x-data="{ open: false }" class="relative">
-                            <button @click="open = !open" class="flex items-center text-gray-700 hover:text-gray-900 transition font-medium focus:outline-none">
-                                <i class="fas fa-user mr-2"></i> {{ Auth::user()->name }}
+                            @php
+                                $user = Auth::user();
+                                $profilePicture = $user->profile_picture && file_exists(public_path('storage/' . $user->profile_picture))
+                                    ? asset('storage/' . $user->profile_picture)
+                                    : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random';
+                            @endphp
+
+                            <button 
+                                @click="open = !open" 
+                                class="flex items-center text-gray-700 hover:text-gray-900 transition font-medium focus:outline-none"
+                            >
+                                <img 
+                                    src="{{ $profilePicture }}" 
+                                    alt="Profile Picture" 
+                                    class="w-8 h-8 rounded-full object-cover border border-gray-300 mr-2"
+                                >
+                                <span>{{ Auth::user()->name }}</span>
                                 <i class="fas fa-chevron-down ml-2 text-xs"></i>
                             </button>
 
-                            <div x-show="open" 
-                                 x-transition:enter="transition ease-out duration-150" 
-                                 x-transition:enter-start="opacity-0 scale-95" 
-                                 x-transition:enter-end="opacity-100 scale-100"
-                                 x-transition:leave="transition ease-in duration-100"
-                                 x-transition:leave-start="opacity-100 scale-100"
-                                 x-transition:leave-end="opacity-0 scale-95"
-                                 @click.away="open = false"
-                                 x-cloak
-                                 class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                            <div 
+                                x-show="open" 
+                                x-transition:enter="transition ease-out duration-150" 
+                                x-transition:enter-start="opacity-0 scale-95" 
+                                x-transition:enter-end="opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-100"
+                                x-transition:leave-start="opacity-100 scale-100"
+                                x-transition:leave-end="opacity-0 scale-95"
+                                @click.away="open = false"
+                                x-cloak
+                                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+                            >
                                 <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     Profile
                                 </a>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" 
-                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <button 
+                                        type="submit" 
+                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    >
                                         Logout
                                     </button>
                                 </form>
                             </div>
                         </div>
+
                     @else
                         <a href="{{ route('login') }}" class="text-gray-700 hover:text-gray-900 transition font-medium">LOGIN</a>
                         <a href="{{ route('appointments.create') }}" class="bg-black text-white px-6 py-2 hover:bg-gray-800 transition font-medium">
