@@ -1,4 +1,4 @@
-# 💄 Beauty Studio Website
+# 💄 Aplikasi Beauty Studio 
 
 ## 👩‍💻 Kelompok / Developer
 - **Cindy Artika** (241402012) – Frontend
