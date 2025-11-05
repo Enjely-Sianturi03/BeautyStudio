@@ -118,6 +118,33 @@
         </div>
     </nav>
 
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url('/') }}">Beauty Studio</a>
+
+        <div class="d-flex align-items-center ms-auto">
+            @auth
+                <a href="{{ route('profile.edit') }}" class="btn btn-outline-primary me-2">
+                    Profil
+                </a>
+
+                <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger">
+                        Logout
+                    </button>
+                </form>
+            @endauth
+
+            @guest
+                <a href="{{ route('login') }}" class="btn btn-primary me-2">Login</a>
+                <a href="{{ route('register') }}" class="btn btn-secondary">Register</a>
+            @endguest
+        </div>
+    </div>
+</nav>
+
+
     <!-- Main Content -->
     <main class="pt-20">
         @if(session('success'))
