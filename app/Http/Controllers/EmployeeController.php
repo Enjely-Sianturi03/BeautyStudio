@@ -19,7 +19,7 @@ class EmployeeController extends Controller
         
         // 2. Perbarui status menjadi 'Completed'
         $appointment->status = 'Completed';
-        $appointment->completion_time = now(); // Tambahkan waktu penyelesaian
+        $appointment->completion_time = now(); 
         $appointment->save();
 
         // 3. Redirect kembali dengan pesan sukses
