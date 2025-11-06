@@ -15,8 +15,15 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+<<<<<<< HEAD
     <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
+=======
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js for interactive UI -->
+>>>>>>> 7831b29bf5c26abc5d2b7033d5a5584c173ab7a4
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     <style>
@@ -26,6 +33,7 @@
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Playfair Display', serif;
         }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body class="antialiased bg-white">
@@ -52,21 +60,56 @@
                         <a href="{{ route('appointments.create') }}" class="bg-black text-white px-6 py-2 hover:bg-gray-800 transition font-medium">
                             BOOK NOW
                         </a>
-                        <div class="relative group">
-                            <button class="flex items-center text-gray-700 hover:text-gray-900 transition font-medium">
-                                <i class="fas fa-user mr-2"></i> {{ Auth::user()->name }}
+
+                        <!-- Dropdown Menu -->
+                        <div x-data="{ open: false }" class="relative">
+                            @php
+                                $user = Auth::user();
+                                $profilePicture = $user->profile_picture && file_exists(public_path('storage/' . $user->profile_picture))
+                                    ? asset('storage/' . $user->profile_picture)
+                                    : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random';
+                            @endphp
+
+                            <button 
+                                @click="open = !open" 
+                                class="flex items-center text-gray-700 hover:text-gray-900 transition font-medium focus:outline-none"
+                            >
+                                <img 
+                                    src="{{ $profilePicture }}" 
+                                    alt="Profile Picture" 
+                                    class="w-8 h-8 rounded-full object-cover border border-gray-300 mr-2"
+                                >
+                                <span>{{ Auth::user()->name }}</span>
                                 <i class="fas fa-chevron-down ml-2 text-xs"></i>
                             </button>
-                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block">
-                                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+
+                            <div 
+                                x-show="open" 
+                                x-transition:enter="transition ease-out duration-150" 
+                                x-transition:enter-start="opacity-0 scale-95" 
+                                x-transition:enter-end="opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-100"
+                                x-transition:leave-start="opacity-100 scale-100"
+                                x-transition:leave-end="opacity-0 scale-95"
+                                @click.away="open = false"
+                                x-cloak
+                                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+                            >
+                                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Profile
+                                </a>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <button 
+                                        type="submit" 
+                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    >
                                         Logout
                                     </button>
                                 </form>
                             </div>
                         </div>
+
                     @else
                         <a href="{{ route('login') }}" class="text-gray-700 hover:text-gray-900 transition font-medium">LOGIN</a>
                         <a href="{{ route('appointments.create') }}" class="bg-black text-white px-6 py-2 hover:bg-gray-800 transition font-medium">
@@ -184,15 +227,12 @@
                 </div>
             </div>
 
-            <!-- Refund Policy -->
             <div class="pt-8 border-t border-gray-800">
                 <h4 class="text-lg font-semibold mb-3">REFUND POLICY</h4>
                 <p class="text-gray-400 text-sm leading-relaxed">
                     Due to the time and product used that goes into your custom service, ARTIKA Hair Spa does not offer refunds. 
                     We do offer adjustments to technical errors such as uneven haircuts, uneven hair color, bleed marks on hair color. 
-                    Any errors need to be brought to our attention within 72 hours of your appointment. Any adjustment request made after 
-                    72 hours will not be accommodated. Adjustments need to be scheduled no later than 7 days after notifying the salon 
-                    and need to be scheduled with the original stylist.
+                    Any errors need to be brought to our attention within 72 hours of your appointment.
                 </p>
             </div>
 
@@ -205,23 +245,36 @@
     <script>
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
+<<<<<<< HEAD
         mobileMenuButton.addEventListener('click', function() {
             mobileMenu.classList.toggle('hidden');
         });
+=======
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+        // Navbar scroll effect
+>>>>>>> 7831b29bf5c26abc5d2b7033d5a5584c173ab7a4
         window.addEventListener('scroll', function() {
             const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('shadow-lg');
-            } else {
-                navbar.classList.remove('shadow-lg');
-            }
+            if (window.scrollY > 50) navbar.classList.add('shadow-lg');
+            else navbar.classList.remove('shadow-lg');
         });
+<<<<<<< HEAD
         setTimeout(function() {
             const alerts = document.querySelectorAll('[role="alert"]');
             alerts.forEach(function(alert) {
                 alert.style.transition = 'opacity 0.5s';
                 alert.style.opacity = '0';
                 setTimeout(function() { alert.remove(); }, 500);
+=======
+
+        // Auto hide alerts
+        setTimeout(() => {
+            document.querySelectorAll('[role="alert"]').forEach(alert => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+>>>>>>> 7831b29bf5c26abc5d2b7033d5a5584c173ab7a4
             });
         }, 5000);
     </script>
