@@ -7,18 +7,22 @@ use Illuminate\Foundation\Http\Kernel as HttpKernel;
 class Kernel extends HttpKernel
 {
     /**
-     * Global HTTP middleware stack.
+     * The application's global HTTP middleware stack.
+     *
+     * These middleware are run during every request to your application.
      */
     protected $middleware = [
-        // Middleware global Laravel
-        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+        // Global middleware Laravel modern
+        \App\Http\Middleware\TrustProxies::class,
+        \Illuminate\Http\Middleware\HandleCors::class,
+        \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
     ];
 
     /**
-     * Middleware groups untuk web & api.
+     * The application's route middleware groups.
      */
     protected $middlewareGroups = [
         'web' => [
@@ -31,19 +35,19 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            'throttle:60,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
         ],
     ];
 
     /**
-     * Middleware per route.
+     * The application's route middleware.
+     *
+     * These middleware may be assigned to groups or used individually.
      */
     protected $routeMiddleware = [
         'auth' => \App\Http\Middleware\Authenticate::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-
-        // ⬇️ Tambahkan baris ini
-        'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        'admin' => \App\Http\Middleware\AdminMiddleware::class, // ✅ middleware admin terdaftar
     ];
 }
