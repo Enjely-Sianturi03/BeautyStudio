@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\OwnerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +67,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pegawai', [EmployeeController::class, 'index'])->name('employee.dashboard');
     Route::post('/pegawai/layanan/{id}/selesai', [EmployeeController::class, 'completeAppointment'])
         ->name('employee.appointment.complete');
+
+    // Owner Dashboard
+    Route::get('/owner/dashboard', [OwnerController::class, 'dashboard'])->name('owner.dashboard');
 });
 
 /*
