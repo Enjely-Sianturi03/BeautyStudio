@@ -72,23 +72,21 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/owner/dashboard', [OwnerController::class, 'dashboard'])->name('owner.dashboard');
 });
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN ROUTES
-|--------------------------------------------------------------------------
-*/
-
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
-
-    // CRUD Data Service
-    Route::resource('/services', ServiceController::class)->except(['index', 'show']);
-    Route::resource('/appointments', AppointmentController::class)->except(['create', 'store', 'show']);
-    Route::resource('/gallery', GalleryController::class)->except(['index']);
-
-    // Tambahan opsional
-    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
-    Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
+ // ===============================
+ // ADMIN ROUTES
+ // ===============================
+ 
+ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+     // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+     Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard'); 
+     // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+ 
+     // CRUD Data Service
+     Route::resource('/services', ServiceController::class)->except(['index', 'show']);
+     Route::resource('/appointments', AppointmentController::class)->except(['create', 'store', 'show']);
+     Route::resource('/gallery', GalleryController::class)->except(['index']);
+ 
+     // Tambahan opsional
+     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+     Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
 });
-
-require __DIR__ . '/auth.php';
