@@ -16,15 +16,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Scripts -->
-     <!-- TailwindCSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome (ikon sudah ada di bawah, tapi pastikan ini juga) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Optional: Alpine.js (jika ingin interaksi sederhana seperti toggle menu) -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
 
     <style>
         body {
@@ -49,7 +42,9 @@
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="{{ route('home') }}" class="text-gray-700 hover:text-gray-900 transition font-medium {{ request()->routeIs('home') ? 'border-b-2 border-gray-900' : '' }}">HOME</a>
                     <a href="{{ route('services.index') }}" class="text-gray-700 hover:text-gray-900 transition font-medium {{ request()->routeIs('services.*') ? 'border-b-2 border-gray-900' : '' }}">SERVICES</a>
-                    <a href="{{ route('gallery.index') }}" class="text-gray-700 hover:text-gray-900 transition font-medium {{ request()->routeIs('gallery.*') ? 'border-b-2 border-gray-900' : '' }}">GALLERY</a>
+                    
+                    {{-- <a href="{{ route('gallery.index') }}" class="text-gray-700 hover:text-gray-900 transition font-medium {{ request()->routeIs('gallery.*') ? 'border-b-2 border-gray-900' : '' }}">GALLERY</a> --}}
+                    
                     <a href="#contact" class="text-gray-700 hover:text-gray-900 transition font-medium">CONTACT</a>
 
                     @auth
@@ -92,7 +87,9 @@
             <div class="container mx-auto px-4 py-4 space-y-4">
                 <a href="{{ route('home') }}" class="block text-gray-700 hover:text-gray-900 transition font-medium">HOME</a>
                 <a href="{{ route('services.index') }}" class="block text-gray-700 hover:text-gray-900 transition font-medium">SERVICES</a>
-                <a href="{{ route('gallery.index') }}" class="block text-gray-700 hover:text-gray-900 transition font-medium">GALLERY</a>
+                
+                {{-- <a href="{{ route('gallery.index') }}" class="block text-gray-700 hover:text-gray-900 transition font-medium">GALLERY</a> --}}
+                
                 <a href="#contact" class="block text-gray-700 hover:text-gray-900 transition font-medium">CONTACT</a>
 
                 @auth
@@ -141,20 +138,15 @@
     <footer class="bg-black text-white py-16">
         <div class="container mx-auto px-4">
             <div class="grid md:grid-cols-4 gap-8 mb-12">
+
                 <!-- About -->
                 <div>
                     <h3 class="text-2xl font-serif mb-4">Beauty Studio</h3>
                     <p class="text-gray-400 mb-4">A destination salon in Whittier, CA known for customer service and sensory experience.</p>
                     <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white transition">
-                            <i class="fab fa-facebook-f text-xl"></i>
-                        </a>
-                        <a href="https://instagram.com/artikahairspa" target="_blank" class="text-gray-400 hover:text-white transition">
-                            <i class="fab fa-instagram text-xl"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition">
-                            <i class="fab fa-twitter text-xl"></i>
-                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook-f text-xl"></i></a>
+                        <a href="https://instagram.com/artikahairspa" target="_blank" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram text-xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter text-xl"></i></a>
                     </div>
                 </div>
 
@@ -163,7 +155,7 @@
                     <h4 class="text-lg font-semibold mb-4">QUICK LINKS</h4>
                     <ul class="space-y-2">
                         <li><a href="{{ route('services.index') }}" class="text-gray-400 hover:text-white transition">Services</a></li>
-                        <li><a href="{{ route('gallery.index') }}" class="text-gray-400 hover:text-white transition">Gallery</a></li>
+                        {{-- <li><a href="{{ route('gallery.index') }}" class="text-gray-400 hover:text-white transition">Gallery</a></li> --}}
                         <li><a href="{{ route('appointments.create') }}" class="text-gray-400 hover:text-white transition">Book Appointment</a></li>
                         @auth
                         <li><a href="{{ route('appointments.index') }}" class="text-gray-400 hover:text-white transition">My Appointments</a></li>
@@ -175,18 +167,9 @@
                 <div>
                     <h4 class="text-lg font-semibold mb-4">CONTACT</h4>
                     <ul class="space-y-3 text-gray-400">
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt mr-3 mt-1"></i>
-                            <span>123 Main Street<br>Whittier, CA 90601</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone mr-3"></i>
-                            <span>(562) 555-1234</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope mr-3"></i>
-                            <span>info@artikasalon.com</span>
-                        </li>
+                        <li class="flex items-start"><i class="fas fa-map-marker-alt mr-3 mt-1"></i><span>123 Main Street<br>Whittier, CA 90601</span></li>
+                        <li class="flex items-center"><i class="fas fa-phone mr-3"></i><span>(562) 555-1234</span></li>
+                        <li class="flex items-center"><i class="fas fa-envelope mr-3"></i><span>info@artikasalon.com</span></li>
                     </ul>
                 </div>
 
@@ -194,18 +177,9 @@
                 <div>
                     <h4 class="text-lg font-semibold mb-4">HOURS</h4>
                     <ul class="space-y-2 text-gray-400">
-                        <li class="flex justify-between">
-                            <span>Monday - Friday</span>
-                            <span>9:00 AM - 7:00 PM</span>
-                        </li>
-                        <li class="flex justify-between">
-                            <span>Saturday</span>
-                            <span>9:00 AM - 6:00 PM</span>
-                        </li>
-                        <li class="flex justify-between">
-                            <span>Sunday</span>
-                            <span>Closed</span>
-                        </li>
+                        <li class="flex justify-between"><span>Monday - Friday</span><span>9:00 AM - 7:00 PM</span></li>
+                        <li class="flex justify-between"><span>Saturday</span><span>9:00 AM - 6:00 PM</span></li>
+                        <li class="flex justify-between"><span>Sunday</span><span>Closed</span></li>
                     </ul>
                 </div>
             </div>
@@ -222,7 +196,6 @@
                 </p>
             </div>
 
-            <!-- Copyright -->
             <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
                 <p>&copy; {{ date('Y') }} Beauty Studio. All rights reserved.</p>
             </div>
@@ -230,15 +203,11 @@
     </footer>
 
     <script>
-        // Mobile Menu Toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
-
         mobileMenuButton.addEventListener('click', function() {
             mobileMenu.classList.toggle('hidden');
         });
-
-        // Navbar scroll effect
         window.addEventListener('scroll', function() {
             const navbar = document.getElementById('navbar');
             if (window.scrollY > 50) {
@@ -247,16 +216,12 @@
                 navbar.classList.remove('shadow-lg');
             }
         });
-
-        // Auto hide alerts
         setTimeout(function() {
             const alerts = document.querySelectorAll('[role="alert"]');
             alerts.forEach(function(alert) {
                 alert.style.transition = 'opacity 0.5s';
                 alert.style.opacity = '0';
-                setTimeout(function() {
-                    alert.remove();
-                }, 500);
+                setTimeout(function() { alert.remove(); }, 500);
             });
         }, 5000);
     </script>
