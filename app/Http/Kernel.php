@@ -8,11 +8,8 @@ class Kernel extends HttpKernel
 {
     /**
      * The application's global HTTP middleware stack.
-     *
-     * These middleware are run during every request to your application.
      */
     protected $middleware = [
-        // Global middleware Laravel modern
         \App\Http\Middleware\TrustProxies::class,
         \Illuminate\Http\Middleware\HandleCors::class,
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
@@ -35,19 +32,17 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
+            'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
         ],
     ];
 
     /**
      * The application's route middleware.
-     *
-     * These middleware may be assigned to groups or used individually.
      */
     protected $routeMiddleware = [
         'auth' => \App\Http\Middleware\Authenticate::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'admin' => \App\Http\Middleware\AdminMiddleware::class, // ✅ middleware admin terdaftar
+        'admin' => \App\Http\Middleware\AdminMiddleware::class,
     ];
 }

@@ -23,7 +23,7 @@ Route::get('/services', [ServiceController::class, 'index'])->name('services.ind
 Route::get('/services/{service}', [ServiceController::class, 'show'])->name('services.show');
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery.index');
 
-// Booking (form & simpan)
+// Booking
 Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
 Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 
@@ -72,21 +72,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/owner/dashboard', [OwnerController::class, 'dashboard'])->name('owner.dashboard');
 });
 
- // ===============================
- // ADMIN ROUTES
- // ===============================
- 
- Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-     // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-     Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard'); 
-     // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
- 
-     // CRUD Data Service
-     Route::resource('/services', ServiceController::class)->except(['index', 'show']);
-     Route::resource('/appointments', AppointmentController::class)->except(['create', 'store', 'show']);
-     Route::resource('/gallery', GalleryController::class)->except(['index']);
- 
-     // Tambahan opsional
-     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
-     Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
+/*
+|--------------------------------------------------------------------------
+| ADMIN ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+
+    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
+
+    // CRUD Data Service
+    Route::resource('services', ServiceController::class)->except(['index', 'show']);
+    Route::resource('appointments', AppointmentController::class)->except(['create', 'store', 'show']);
+    Route::resource('gallery', GalleryController::class)->except(['index']);
+
+    // Tambahan opsional
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
 });
