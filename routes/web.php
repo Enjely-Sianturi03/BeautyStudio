@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\OwnerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,13 +72,12 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-// ROUTE BARU: Untuk menampilkan dashboard pegawai (GET)
 Route::get('/pegawai', [EmployeeController::class, 'index'])
     ->middleware('auth')
-    ->name('employee.dashboard'); // Gunakan nama ini jika Anda ingin menavigasi ke sana
+    ->name('employee.dashboard'); 
     
-// ROUTE LAMA: Untuk aksi menyelesaikan layanan (POST)
 Route::post('/pegawai/layanan/{id}/selesai', [EmployeeController::class, 'completeAppointment'])
     ->middleware('auth')
     ->name('employee.appointment.complete');
 
+Route::get('/owner/dashboard', [OwnerController::class, 'dashboard'])->name('owner.dashboard');
