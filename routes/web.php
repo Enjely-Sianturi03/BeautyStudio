@@ -4,27 +4,18 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\AppointmentController;
-<<<<<<< HEAD
-// use App\Http\Controllers\GalleryController;  <-- dikasih // biar nonaktif
-// use App\Http\Controllers\AuthController;     <-- dikasih // biar nonaktif
-use Illuminate\Support\Facades\Route;
-
-// Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');  
-// Route::post('/login', [AuthController::class, 'login']);                       
-
-=======
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\OwnerController;
 
 /*
 |--------------------------------------------------------------------------
 | Public Routes (Bisa diakses tanpa login)
 |--------------------------------------------------------------------------
 */
->>>>>>> 7831b29bf5c26abc5d2b7033d5a5584c173ab7a4
 
 // Halaman utama
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -33,12 +24,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
 Route::get('/services/{service}', [ServiceController::class, 'show'])->name('services.show');
 
-<<<<<<< HEAD
-//Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery.index');
-=======
 // Galeri
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery.index');
->>>>>>> 7831b29bf5c26abc5d2b7033d5a5584c173ab7a4
 
 // Booking (form & simpan)
 Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
@@ -85,13 +72,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-<<<<<<< HEAD
-require __DIR__.'/auth.php';
-
-use App\Http\Controllers\OwnerController;
-
-Route::get('/owner/dashboard', [OwnerController::class, 'dashboard'])->name('owner.dashboard');
-=======
 // ROUTE BARU: Untuk menampilkan dashboard pegawai (GET)
 Route::get('/pegawai', [EmployeeController::class, 'index'])
     ->middleware('auth')
@@ -101,5 +81,5 @@ Route::get('/pegawai', [EmployeeController::class, 'index'])
 Route::post('/pegawai/layanan/{id}/selesai', [EmployeeController::class, 'completeAppointment'])
     ->middleware('auth')
     ->name('employee.appointment.complete');
->>>>>>> 7831b29bf5c26abc5d2b7033d5a5584c173ab7a4
 
+Route::get('/owner/dashboard', [OwnerController::class, 'dashboard'])->name('owner.dashboard');
