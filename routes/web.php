@@ -11,6 +11,10 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OwnerController;
+use App\Http\Controllers\{
+    PelangganController, LayananController, JadwalController,
+    TransaksiController, LaporanController
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -87,7 +91,15 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::resource('appointments', AppointmentController::class)->except(['create', 'store', 'show']);
     Route::resource('gallery', GalleryController::class)->except(['index']);
 
+    Route::resource('pelanggan', PelangganController::class)->only(['index','store','update','destroy']);
+    Route::resource('layanan',   LayananController::class)->only(['index','store','update','destroy']);
+    Route::resource('jadwal',    JadwalController::class)->only(['index','store','update','destroy']);
+    Route::resource('transaksi', TransaksiController::class)->only(['index','store']);
+
+    Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('laporan/export', [LaporanController::class, 'exportCsv'])->name('laporan.export');
+
     // Tambahan opsional
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
-    Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
+    Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');   
 });
