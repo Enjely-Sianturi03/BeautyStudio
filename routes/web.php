@@ -81,25 +81,35 @@ Route::middleware(['auth'])->group(function () {
 | ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
+/*
+|-------------------------------------------------------------------------- 
+| ADMIN ROUTES
+|-------------------------------------------------------------------------- 
+*/
 
-Route::middleware(['auth'])->prefix('admin')->group(function () {
+Route::middleware(['auth'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
 
-    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/', [AdminController::class, 'index'])->name('dashboard');
 
     // CRUD Data Service
     Route::resource('services', ServiceController::class)->except(['index', 'show']);
     Route::resource('appointments', AppointmentController::class)->except(['create', 'store', 'show']);
     Route::resource('gallery', GalleryController::class)->except(['index']);
 
+    // Data tambahan admin
     Route::resource('pelanggan', PelangganController::class)->only(['index','store','update','destroy']);
     Route::resource('layanan',   LayananController::class)->only(['index','store','update','destroy']);
     Route::resource('jadwal',    JadwalController::class)->only(['index','store','update','destroy']);
     Route::resource('transaksi', TransaksiController::class)->only(['index','store']);
 
+    // Laporan
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('laporan/export', [LaporanController::class, 'exportCsv'])->name('laporan.export');
 
     // Tambahan opsional
-    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
-    Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');   
+    Route::get('users', [AdminController::class, 'users'])->name('users');
+    Route::get('reports', [AdminController::class, 'reports'])->name('reports');
 });
