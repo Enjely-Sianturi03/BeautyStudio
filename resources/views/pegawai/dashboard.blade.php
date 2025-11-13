@@ -44,7 +44,7 @@
 
                                 @if($appointment->status == 'Pending')
                                     {{-- Form untuk memperbarui status layanan menjadi 'selesai' [cite: 164] --}}
-                                    <form action="{{ route('employee.appointment.complete', $appointment->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin layanan ini sudah selesai?');">
+                                    <form action="{{ route('pegawai.appointment.complete', $appointment->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin layanan ini sudah selesai?');">
                                         @csrf
                                         {{-- Method PUT/PATCH lebih disarankan untuk update --}}
                                         <!-- @method('PATCH')  -->
