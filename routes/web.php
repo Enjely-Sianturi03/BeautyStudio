@@ -72,6 +72,10 @@ Route::middleware(['auth', 'role:pegawai'])
         Route::get('/dashboard', [EmployeeController::class, 'index'])->name('dashboard');
         Route::post('/layanan/{id}/selesai', [EmployeeController::class, 'completeAppointment'])
             ->name('appointment.complete');
+        Route::get('/jadwal', [EmployeeController::class, 'schedule'])->name('jadwal');
+        Route::get('/riwayat', [EmployeeController::class, 'history'])->name('riwayat');
+        Route::post('/layanan/{id}/selesai', [EmployeeController::class, 'completeAppointment'])
+            ->name('appointment.complete');
     });
 
 
