@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Page Header -->
-<section class="relative h-64 bg-gradient-to-r from-purple-900 to-pink-900 flex items-center justify-center">
+<section class="relative h-64 bg-gradient-to-r from-pink-700 to-pink-900 flex items-center justify-center">
     <div class="text-center text-white px-4">
         <h1 class="text-4xl md:text-5xl font-light mb-2">BOOK YOUR APPOINTMENT</h1>
         <p class="text-lg md:text-xl font-light">Transform your look with our expert stylists</p>
@@ -12,9 +12,9 @@
 </section>
 
 <!-- Booking Form -->
-<section class="py-20 bg-gray-50">
+<section class="py-20 bg-pink-50">
     <div class="container mx-auto px-4">
-        <div class="max-w-3xl mx-auto bg-white p-8 md:p-12 shadow-xl rounded-lg">
+        <div class="max-w-3xl mx-auto bg-pink-100 p-8 md:p-12 shadow-xl rounded-lg">
             @if(!Auth::check())
             <div class="bg-blue-50 border-l-4 border-blue-500 p-6 mb-8">
                 <div class="flex">
@@ -34,32 +34,91 @@
                 </div>
             </div>
             @else
-            
+
+            @php
+                // support both variable names that controller might send
+                $selected = $selectedService ?? $service ?? null;
+                // available time slots (half-hour increments sample)
+                $times = [
+                    '09:00' => '9:00 AM',
+                    '09:30' => '9:30 AM',
+                    '10:00' => '10:00 AM',
+                    '10:30' => '10:30 AM',
+                    '11:00' => '11:00 AM',
+                    '11:30' => '11:30 AM',
+                    '12:00' => '12:00 PM',
+                    '12:30' => '12:30 PM',
+                    '13:00' => '1:00 PM',
+                    '13:30' => '1:30 PM',
+                    '14:00' => '2:00 PM',
+                    '14:30' => '2:30 PM',
+                    '15:00' => '3:00 PM',
+                    '15:30' => '3:30 PM',
+                    '16:00' => '4:00 PM',
+                    '16:30' => '4:30 PM',
+                    '17:00' => '5:00 PM',
+                    '17:30' => '5:30 PM',
+                    '18:00' => '6:00 PM',
+                ];
+                $minDate = date('Y-m-d', strtotime('+1 day'));
+            @endphp
+
             <h2 class="text-3xl font-light mb-8 pb-4 border-b">Appointment Details</h2>
 
-            <form action="{{ route('appointments.store') }}" method="POST" id="appointment-form">
+            <form action="{{ route('appointments.store') }}" 
+                  method="POST" 
+                  id="appointment-form" 
+                  enctype="multipart/form-data">
                 @csrf
 
                 <!-- Service Selection -->
+                 <!-- Customer Name -->
+<div class="mb-6">
+    <label class="block text-lg font-medium text-gray-700 mb-2">
+        Masukkan Nama <span class="text-red-500">*</span>
+    </label>
+    <input 
+        type="text" 
+        name="name" 
+        value="{{ old('name', Auth::user()->name ?? '') }}"
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent @error('name') border-red-500 @enderror"
+        placeholder="Masukkan nama kamu"
+        required
+    >
+    @error('name')
+        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+    @enderror
+</div>
+
                 <div class="mb-6">
                     <label for="service_id" class="block text-lg font-medium text-gray-700 mb-2">
                         Select Service <span class="text-red-500">*</span>
                     </label>
-                    <select name="service_id" id="service_id" 
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent @error('service_id') border-red-500 @enderror"
-                            required>
-                        <option value="">-- Choose a service --</option>
-                        @foreach($services as $service)
-                        <option value="{{ $service->id }}" 
-                                data-price="{{ $service->price }}" 
-                                data-duration="{{ $service->duration }}"
-                                {{ (old('service_id') == $service->id || ($selectedService && $selectedService->id == $service->id)) ? 'selected' : '' }}>
-                            {{ $service->name }} - ${{ number_format($service->price, 2) }} ({{ $service->formatted_duration }})
-                        </option>
-                        @endforeach
-                    </select>
+
+                    @if($selected)
+                        <input type="text" value="{{ $selected->name }}" disabled
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 mb-2">
+                        <input type="hidden" name="service_id" id="service_id" value="{{ $selected->id }}"
+                               data-price="{{ $selected->price ?? '' }}"
+                               data-duration="{{ $selected->duration ?? '' }}">
+                    @else
+                        <select name="service_id" id="service_id"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent @error('service_id') border-red-500 @enderror"
+                                required>
+                            <option value="">-- Choose a service --</option>
+                            @foreach($services as $srv)
+                                <option value="{{ $srv->id }}"
+                                        data-price="{{ $srv->price }}"
+                                        data-duration="{{ $srv->duration }}"
+                                        {{ (old('service_id') && old('service_id') == $srv->id) ? 'selected' : '' }}>
+                                    {{ $srv->name }} - ${{ number_format($srv->price, 2) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @endif
+
                     @error('service_id')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -77,26 +136,6 @@
                     </div>
                 </div>
 
-                <!-- Stylist Selection -->
-                <div class="mb-6">
-                    <label for="stylist_id" class="block text-lg font-medium text-gray-700 mb-2">
-                        Select Stylist <span class="text-red-500">*</span>
-                    </label>
-                    <select name="stylist_id" id="stylist_id" 
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent @error('stylist_id') border-red-500 @enderror"
-                            required>
-                        <option value="">-- Choose a stylist --</option>
-                        @foreach($stylists as $stylist)
-                        <option value="{{ $stylist->id }}" {{ old('stylist_id') == $stylist->id ? 'selected' : '' }}>
-                            {{ $stylist->name }} ({{ $stylist->experience_years }} years exp.)
-                        </option>
-                        @endforeach
-                    </select>
-                    @error('stylist_id')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
                 <!-- Date Selection -->
                 <div class="mb-6">
                     <label for="appointment_date" class="block text-lg font-medium text-gray-700 mb-2">
@@ -105,7 +144,7 @@
                     <input type="date" 
                            name="appointment_date" 
                            id="appointment_date" 
-                           min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+                           min="{{ $minDate }}"
                            value="{{ old('appointment_date') }}"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent @error('appointment_date') border-red-500 @enderror"
                            required>
@@ -114,46 +153,53 @@
                     @enderror
                 </div>
 
-                <!-- Time Selection -->
+                <!-- Time Selection (preset slots) -->
                 <div class="mb-6">
                     <label for="appointment_time" class="block text-lg font-medium text-gray-700 mb-2">
                         Select Time <span class="text-red-500">*</span>
                     </label>
-                    <select name="appointment_time" id="appointment_time" 
+                    <select name="appointment_time" id="appointment_time"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent @error('appointment_time') border-red-500 @enderror"
                             required>
                         <option value="">-- Choose a time --</option>
-                        @php
-                            $times = [
-                                '09:00' => '9:00 AM',
-                                '09:30' => '9:30 AM',
-                                '10:00' => '10:00 AM',
-                                '10:30' => '10:30 AM',
-                                '11:00' => '11:00 AM',
-                                '11:30' => '11:30 AM',
-                                '12:00' => '12:00 PM',
-                                '12:30' => '12:30 PM',
-                                '13:00' => '1:00 PM',
-                                '13:30' => '1:30 PM',
-                                '14:00' => '2:00 PM',
-                                '14:30' => '2:30 PM',
-                                '15:00' => '3:00 PM',
-                                '15:30' => '3:30 PM',
-                                '16:00' => '4:00 PM',
-                                '16:30' => '4:30 PM',
-                                '17:00' => '5:00 PM',
-                                '17:30' => '5:30 PM',
-                                '18:00' => '6:00 PM',
-                            ];
-                        @endphp
                         @foreach($times as $value => $label)
-                        <option value="{{ $value }}" {{ old('appointment_time') == $value ? 'selected' : '' }}>
-                            {{ $label }}
-                        </option>
+                            <option value="{{ $value }}" {{ old('appointment_time') == $value ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
                         @endforeach
                     </select>
                     @error('appointment_time')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Payment Method -->
+                <div class="mb-6">
+                    <label class="block font-semibold mb-2">Payment Method <span class="text-red-500">*</span></label>
+                    <select name="payment_method" class="w-full border rounded-lg px-3 py-2 @error('payment_method') border-red-500 @enderror" required>
+                        <option value="">-- Choose a payment method --</option>
+                        <option value="Bank Transfer" {{ old('payment_method') == 'Bank Transfer' ? 'selected' : '' }}>Bank Transfer</option>
+                        <option value="DANA" {{ old('payment_method') == 'DANA' ? 'selected' : '' }}>DANA</option>
+                        <option value="OVO" {{ old('payment_method') == 'OVO' ? 'selected' : '' }}>OVO</option>
+                        <option value="ShopeePay" {{ old('payment_method') == 'ShopeePay' ? 'selected' : '' }}>ShopeePay</option>
+                        <option value="GOPAY" {{ old('payment_method') == 'GOPAY' ? 'selected' : '' }}>GOPAY</option>
+                    </select>
+                    @error('payment_method')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Upload Payment Proof -->
+                <div class="mb-6">
+                    <label class="block font-semibold mb-2">Upload Payment Proof @if(old('payment_method') && old('payment_method') != 'Cash') <span class="text-red-500">*</span> @endif</label>
+                    <input type="file" 
+                           name="payment_proof" 
+                           accept="image/*"
+                           class="w-full border rounded-lg px-3 py-2 @error('payment_proof') border-red-500 @enderror"
+                           {{ old('payment_method') && old('payment_method') == 'Cash' ? '' : 'required' }}>
+                    <p class="text-xs text-gray-500 mt-1">Upload JPG/PNG. Max 2MB. If you choose Cash, upload optional.</p>
+                    @error('payment_proof')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -176,12 +222,12 @@
                 <!-- Submit Buttons -->
                 <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
                     <button type="submit" 
-                            class="flex-1 bg-black text-white px-8 py-4 hover:bg-gray-800 transition font-medium text-lg">
+                            class="flex-1 bg-pink-600 text-white px-8 py-4 hover:bg-pink-500 transition font-medium text-lg">
                         <i class="fas fa-check mr-2"></i> CONFIRM BOOKING
                     </button>
-                    <a href="{{ route('services.index') }}" 
+                    <a href="{{ route('home') }}" 
                        class="flex-1 text-center border-2 border-gray-300 px-8 py-4 hover:bg-gray-100 transition font-medium text-lg">
-                        <i class="fas fa-arrow-left mr-2"></i> BACK TO SERVICES
+                        <i class="fas fa-arrow-left mr-2"></i> BACK TO HOME
                     </a>
                 </div>
             </form>
@@ -192,13 +238,16 @@
 
 @push('scripts')
 <script>
-    // Show service info when selected
-    document.getElementById('service_id').addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const price = selectedOption.getAttribute('data-price');
-        const duration = selectedOption.getAttribute('data-duration');
+    // Show service info when selected (works for select OR hidden input prefilled)
+    function showServiceInfo(el) {
+        const option = (el.tagName && el.tagName.toLowerCase() === 'select')
+            ? el.options[el.selectedIndex]
+            : el; // if it's hidden input element
+
+        const price = option.getAttribute('data-price') || '';
+        const duration = option.getAttribute('data-duration') || '';
+
         const serviceInfo = document.getElementById('service-info');
-        
         if (price && duration) {
             document.getElementById('service-price').textContent = '$' + parseFloat(price).toFixed(2);
             document.getElementById('service-duration').textContent = duration + ' min';
@@ -206,13 +255,41 @@
         } else {
             serviceInfo.classList.add('hidden');
         }
-    });
+    }
 
-    // Trigger change on page load if service is pre-selected
-    window.addEventListener('load', function() {
+    document.addEventListener('DOMContentLoaded', function() {
         const serviceSelect = document.getElementById('service_id');
-        if (serviceSelect.value) {
-            serviceSelect.dispatchEvent(new Event('change'));
+
+        if (serviceSelect) {
+            // if it's a select element
+            if (serviceSelect.tagName.toLowerCase() === 'select') {
+                serviceSelect.addEventListener('change', function() {
+                    showServiceInfo(this);
+                });
+
+                // on load, if old selected or preselected
+                if (serviceSelect.value) {
+                    showServiceInfo(serviceSelect);
+                }
+            } else {
+                // could be hidden input (prefilled selected service)
+                showServiceInfo(serviceSelect);
+            }
+        }
+
+        // if payment method is Cash, make proof optional in UI (note: server-side must also accept)
+        const paymentMethod = document.querySelector('select[name="payment_method"]');
+        const paymentProof = document.querySelector('input[name="payment_proof"]');
+        if (paymentMethod && paymentProof) {
+            function toggleProofRequirement() {
+                if (paymentMethod.value === 'Cash') {
+                    paymentProof.removeAttribute('required');
+                } else {
+                    paymentProof.setAttribute('required', 'required');
+                }
+            }
+            paymentMethod.addEventListener('change', toggleProofRequirement);
+            toggleProofRequirement(); // initial
         }
     });
 </script>

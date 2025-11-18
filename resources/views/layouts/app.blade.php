@@ -7,7 +7,7 @@
 
     <title>{{ config('app.name', 'Beauty Studio') }} - @yield('title', 'Modern Artistic Hair')</title>
 
-    <!-- Fonts -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -18,44 +18,71 @@
     <!-- TailwindCSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Alpine.js for interactive UI -->
+    <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     <style>
-        body {
-            font-family: 'Montserrat', sans-serif;
-        }
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Playfair Display', serif;
-        }
+        body { font-family: 'Montserrat', sans-serif; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
         [x-cloak] { display: none !important; }
+
+        .bg-primary { background-color: #fe76b3ff !important; }
+        .bg-primary-dark { background-color: #ff8fc1ff !important; }
+        .text-primary { color: #fe76b3ff !important; }
+        .hover\:text-primary-dark:hover { color: #f878b2ff !important; }
+        .hover\:bg-primary-dark:hover { background-color: #ff87bdff !important; }
+        .border-primary { border-color: #fe76b3ff !important; }
+        .hover\:bg-pink-100:hover { background-color: #ffe4f1 !important; }
     </style>
 </head>
-<body class="antialiased bg-white">
+
+<body class="antialiased bg-pink-100">
+
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-white shadow-md transition-all duration-300" id="navbar">
+    <nav id="navbar" class="fixed w-full z-50 bg-pink-100 shadow-md transition-all duration-300">
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between h-20">
+
                 <!-- Logo -->
-                <a href="{{ route('home') }}" class="text-2xl font-serif font-bold text-gray-900 hover:text-gray-700 transition">
+                <a href="{{ route('home') }}" class="text-4xl font-serif font-bold text-primary hover:text-primary-dark transition">
                     BEAUTY STUDIO
                 </a>
 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="{{ route('home') }}" class="text-gray-700 hover:text-gray-900 transition font-medium {{ request()->routeIs('home') ? 'border-b-2 border-gray-900' : '' }}">HOME</a>
-                    <a href="{{ route('services.index') }}" class="text-gray-700 hover:text-gray-900 transition font-medium {{ request()->routeIs('services.*') ? 'border-b-2 border-gray-900' : '' }}">SERVICES</a>
-                    <a href="{{ route('gallery.index') }}" class="text-gray-700 hover:text-gray-900 transition font-medium {{ request()->routeIs('gallery.*') ? 'border-b-2 border-gray-900' : '' }}">GALLERY</a>
-                    <a href="#contact" class="text-gray-700 hover:text-gray-900 transition font-medium">CONTACT</a>
+
+                    <a href="{{ route('home') }}"
+                        class="text-gray-700 hover:text-primary transition font-medium
+                        {{ request()->routeIs('home') ? 'border-b-2 border-primary' : '' }}">
+                        HOME
+                    </a>
+
+                    <a href="{{ route('tips.index') }}"
+                        class="text-gray-700 hover:text-primary transition font-medium
+                        {{ request()->routeIs('tips.*') ? 'border-b-2 border-primary' : '' }}">
+                        TIPS
+                    </a>
+
+                    <a href="{{ route('contact') }}" 
+                        class="text-gray-700 hover:text-primary transition font-medium
+                        {{ request()->routeIs('contact') ? 'border-b-2 border-primary' : '' }}">
+                        CONTACT
+                    </a>
 
                     @auth
-                        <a href="{{ route('appointments.index') }}" class="text-gray-700 hover:text-gray-900 transition font-medium {{ request()->routeIs('appointments.*') ? 'border-b-2 border-gray-900' : '' }}">MY APPOINTMENTS</a>
-                        <a href="{{ route('appointments.create') }}" class="bg-black text-white px-6 py-2 hover:bg-gray-800 transition font-medium">
+                        <a href="{{ route('appointments.index') }}"
+                            class="text-gray-700 hover:text-primary transition font-medium
+                            {{ request()->routeIs('appointments.*') ? 'border-b-2 border-primary' : '' }}">
+                            MY APPOINTMENTS
+                        </a>
+
+                        <a href="{{ route('appointments.create') }}" class="bg-primary text-white px-6 py-2 hover:bg-primary-dark transition font-medium">
                             BOOK NOW
                         </a>
 
-                        <!-- Dropdown Menu -->
-                        <div x-data="{ open: false }" class="relative">
+                        <!-- Profile Dropdown -->
+                        <div class="relative" x-data="{ open: false }">
+
                             @php
                                 $user = Auth::user();
                                 $profilePicture = $user->profile_picture && file_exists(public_path('storage/' . $user->profile_picture))
@@ -63,85 +90,72 @@
                                     : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random';
                             @endphp
 
-                            <button 
-                                @click="open = !open" 
-                                class="flex items-center text-gray-700 hover:text-gray-900 transition font-medium focus:outline-none"
-                            >
-                                <img 
-                                    src="{{ $profilePicture }}" 
-                                    alt="Profile Picture" 
-                                    class="w-8 h-8 rounded-full object-cover border border-gray-300 mr-2"
-                                >
-                                <span>{{ Auth::user()->name }}</span>
+                            <button @click="open = !open" class="flex items-center text-gray-700 hover:text-primary transition font-medium">
+                                <img src="{{ $profilePicture }}" class="w-8 h-8 rounded-full border mr-2" alt="Profile">
+                                <span>{{ $user->name }}</span>
                                 <i class="fas fa-chevron-down ml-2 text-xs"></i>
                             </button>
 
-                            <div 
-                                x-show="open" 
-                                x-transition:enter="transition ease-out duration-150" 
-                                x-transition:enter-start="opacity-0 scale-95" 
-                                x-transition:enter-end="opacity-100 scale-100"
-                                x-transition:leave="transition ease-in duration-100"
-                                x-transition:leave-start="opacity-100 scale-100"
-                                x-transition:leave-end="opacity-0 scale-95"
+                            <div x-show="open" x-cloak
                                 @click.away="open = false"
-                                x-cloak
-                                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
-                            >
-                                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+
+                                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm hover:bg-pink-100">
                                     Profile
                                 </a>
-                                <form method="POST" action="{{ route('logout') }}">
+
+                                <form action="{{ route('logout') }}" method="POST">
                                     @csrf
-                                    <button 
-                                        type="submit" 
-                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    >
+                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm hover:bg-pink-100">
                                         Logout
                                     </button>
                                 </form>
+
                             </div>
                         </div>
 
                     @else
-                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-gray-900 transition font-medium">LOGIN</a>
-                        <a href="{{ route('appointments.create') }}" class="bg-black text-white px-6 py-2 hover:bg-gray-800 transition font-medium">
+                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-primary transition font-medium">LOGIN</a>
+                        <a href="{{ route('appointments.create') }}" class="bg-primary text-white px-6 py-2 hover:bg-primary-dark transition font-medium">
                             BOOK NOW
                         </a>
                     @endauth
                 </div>
 
-                <!-- Mobile Menu Button -->
-                <button class="md:hidden text-gray-700 hover:text-gray-900" id="mobile-menu-button">
+                <!-- Mobile Button -->
+                <button id="mobile-menu-button" class="md:hidden text-primary hover:text-primary-dark">
                     <i class="fas fa-bars text-2xl"></i>
                 </button>
+
             </div>
         </div>
 
         <!-- Mobile Menu -->
-        <div class="hidden md:hidden bg-white border-t" id="mobile-menu">
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
             <div class="container mx-auto px-4 py-4 space-y-4">
-                <a href="{{ route('home') }}" class="block text-gray-700 hover:text-gray-900 transition font-medium">HOME</a>
-                <a href="{{ route('services.index') }}" class="block text-gray-700 hover:text-gray-900 transition font-medium">SERVICES</a>
-                <a href="{{ route('gallery.index') }}" class="block text-gray-700 hover:text-gray-900 transition font-medium">GALLERY</a>
-                <a href="#contact" class="block text-gray-700 hover:text-gray-900 transition font-medium">CONTACT</a>
+
+                <a href="{{ route('home') }}" class="block text-primary font-medium">HOME</a>
+                <a href="{{ route('tips.index') }}" class="block text-gray-700 hover:text-primary">TIPS</a>
+                <a href="{{ route('contact') }}" class="block text-gray-700 hover:text-primary">CONTACT</a>
 
                 @auth
-                    <a href="{{ route('appointments.index') }}" class="block text-gray-700 hover:text-gray-900 transition font-medium">MY APPOINTMENTS</a>
-                    <a href="{{ route('profile.edit') }}" class="block text-gray-700 hover:text-gray-900 transition font-medium">PROFILE</a>
-                    <a href="{{ route('appointments.create') }}" class="block bg-black text-white px-6 py-2 text-center hover:bg-gray-800 transition font-medium">
+                    <a href="{{ route('appointments.index') }}" class="block">MY APPOINTMENTS</a>
+                    <a href="{{ route('profile.edit') }}" class="block">PROFILE</a>
+
+                    <a href="{{ route('appointments.create') }}" class="block bg-primary text-white px-6 py-2 text-center rounded">
                         BOOK NOW
                     </a>
-                    <form method="POST" action="{{ route('logout') }}">
+
+                    <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button type="submit" class="block w-full text-left text-gray-700 hover:text-gray-900 transition font-medium">
-                            LOGOUT
-                        </button>
+                        <button class="block w-full text-left">LOGOUT</button>
                     </form>
+
                 @else
-                    <a href="{{ route('login') }}" class="block text-gray-700 hover:text-gray-900 transition font-medium">LOGIN</a>
-                    <a href="{{ route('register') }}" class="block text-gray-700 hover:text-gray-900 transition font-medium">REGISTER</a>
-                    <a href="{{ route('appointments.create') }}" class="block bg-black text-white px-6 py-2 text-center hover:bg-gray-800 transition font-medium">
+                    <a href="{{ route('login') }}" class="block">LOGIN</a>
+                    <a href="{{ route('register') }}" class="block">REGISTER</a>
+
+                    <a href="{{ route('appointments.create') }}" class="block bg-primary text-white px-6 py-2 text-center rounded">
                         BOOK NOW
                     </a>
                 @endauth
@@ -149,64 +163,25 @@
         </div>
     </nav>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container">
-        <a class="navbar-brand" href="{{ url('/') }}">Beauty Studio</a>
-
-        <div class="d-flex align-items-center ms-auto">
-            @auth
-                <a href="{{ route('profile.edit') }}" class="btn btn-outline-primary me-2">
-                    Profil
-                </a>
-
-                <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                    @csrf
-                    <button type="submit" class="btn btn-outline-danger">
-                        Logout
-                    </button>
-                </form>
-            @endauth
-
-            @guest
-                <a href="{{ route('login') }}" class="btn btn-primary me-2">Login</a>
-                <a href="{{ route('register') }}" class="btn btn-secondary">Register</a>
-            @endguest
-        </div>
-    </div>
-</nav>
-
-
-    <!-- Main Content -->
+    <!-- MAIN CONTENT -->
     <main class="pt-20">
-        @if(session('success'))
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 container mx-auto mt-4" role="alert">
-                <p class="font-bold">Success!</p>
-                <p>{{ session('success') }}</p>
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 container mx-auto mt-4" role="alert">
-                <p class="font-bold">Error!</p>
-                <p>{{ session('error') }}</p>
-            </div>
-        @endif
-
         @yield('content')
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-black text-white py-16">
+    <!-- FOOTER -->
+    <footer class="bg-primary-dark text-white py-16">
         <div class="container mx-auto px-4">
+
             <div class="grid md:grid-cols-4 gap-8 mb-12">
+
                 <!-- About -->
                 <div>
-                    <h3 class="text-2xl font-serif mb-4">Beauty Studio</h3>
-                    <p class="text-gray-400 mb-4">A destination salon in Whittier, CA known for customer service and sensory experience.</p>
+                    <h3 class="text-2xl mb-4">Beauty Studio</h3>
+                    <p class="text-pink-100 mb-4">A destination salon in Whittier, CA known for customer service and sensory experience.</p>
                     <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook-f text-xl"></i></a>
-                        <a href="https://instagram.com/artikahairspa" target="_blank" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram text-xl"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter text-xl"></i></a>
+                        <a href="#" class="text-pink-200 hover:text-white"><i class="fab fa-facebook-f text-xl"></i></a>
+                        <a href="https://instagram.com/artikahairspa" target="_blank" class="text-pink-200 hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
+                        <a href="#" class="text-pink-200 hover:text-white"><i class="fab fa-twitter text-xl"></i></a>
                     </div>
                 </div>
 
@@ -214,11 +189,12 @@
                 <div>
                     <h4 class="text-lg font-semibold mb-4">QUICK LINKS</h4>
                     <ul class="space-y-2">
-                        <li><a href="{{ route('services.index') }}" class="text-gray-400 hover:text-white transition">Services</a></li>
-                        <li><a href="{{ route('gallery.index') }}" class="text-gray-400 hover:text-white transition">Gallery</a></li>
-                        <li><a href="{{ route('appointments.create') }}" class="text-gray-400 hover:text-white transition">Book Appointment</a></li>
+                        <li><a href="{{ route('services.index') }}" class="text-pink-100 hover:text-white">Services</a></li>
+                        <li><a href="{{ route('tips.index') }}" class="text-pink-100 hover:text-white">Tips</a></li>
+                        <li><a href="{{ route('appointments.create') }}" class="text-pink-100 hover:text-white">Book Appointment</a></li>
+
                         @auth
-                        <li><a href="{{ route('appointments.index') }}" class="text-gray-400 hover:text-white transition">My Appointments</a></li>
+                        <li><a href="{{ route('appointments.index') }}" class="text-pink-100 hover:text-white">My Appointments</a></li>
                         @endauth
                     </ul>
                 </div>
@@ -226,62 +202,52 @@
                 <!-- Contact -->
                 <div>
                     <h4 class="text-lg font-semibold mb-4">CONTACT</h4>
-                    <ul class="space-y-3 text-gray-400">
-                        <li class="flex items-start"><i class="fas fa-map-marker-alt mr-3 mt-1"></i><span>123 Main Street<br>Whittier, CA 90601</span></li>
-                        <li class="flex items-center"><i class="fas fa-phone mr-3"></i><span>(562) 555-1234</span></li>
-                        <li class="flex items-center"><i class="fas fa-envelope mr-3"></i><span>info@artikasalon.com</span></li>
+                    <ul class="space-y-3 text-pink-100">
+                        <li class="flex items-start"><i class="fas fa-map-marker-alt mr-3"></i>123 Main Street, Whittier, CA 90601</li>
+                        <li class="flex items-center"><i class="fas fa-phone mr-3"></i>(562) 555-1234</li>
+                        <li class="flex items-center"><i class="fas fa-envelope mr-3"></i>info@artikasalon.com</li>
                     </ul>
                 </div>
 
                 <!-- Hours -->
                 <div>
                     <h4 class="text-lg font-semibold mb-4">HOURS</h4>
-                    <ul class="space-y-2 text-gray-400">
-                        <li class="flex justify-between"><span>Monday - Friday</span><span>9:00 AM - 7:00 PM</span></li>
-                        <li class="flex justify-between"><span>Saturday</span><span>9:00 AM - 6:00 PM</span></li>
+                    <ul class="space-y-2 text-pink-100">
+                        <li class="flex justify-between"><span>Mon - Fri</span><span>9 AM - 7 PM</span></li>
+                        <li class="flex justify-between"><span>Saturday</span><span>9 AM - 6 PM</span></li>
                         <li class="flex justify-between"><span>Sunday</span><span>Closed</span></li>
                     </ul>
                 </div>
             </div>
 
-            <div class="pt-8 border-t border-gray-800">
+            <div class="pt-8 border-t border-pink-300">
                 <h4 class="text-lg font-semibold mb-3">REFUND POLICY</h4>
-                <p class="text-gray-400 text-sm leading-relaxed">
-                    Due to the time and product used that goes into your custom service, ARTIKA Hair Spa does not offer refunds. 
-                    We do offer adjustments to technical errors such as uneven haircuts, uneven hair color, bleed marks on hair color. 
-                    Any errors need to be brought to our attention within 72 hours of your appointment.
+                <p class="text-sm text-pink-100">
+                    Due to the time and product used, ARTIKA Hair Spa does not offer refunds.
+                    We only offer adjustments for technical errors (uneven cuts, uneven color, etc.)
+                    reported within 72 hours.
                 </p>
             </div>
 
-            <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
+            <div class="mt-8 pt-8 border-t border-pink-300 text-center text-pink-100">
                 <p>&copy; {{ date('Y') }} Beauty Studio. All rights reserved.</p>
             </div>
+
         </div>
     </footer>
 
-    <script>
-        // Mobile Menu Toggle
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+<script>
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
 
-        // Navbar scroll effect
-        window.addEventListener('scroll', function() {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) navbar.classList.add('shadow-lg');
-            else navbar.classList.remove('shadow-lg');
-        });
+    window.addEventListener('scroll', function () {
+        const navbar = document.getElementById('navbar');
+        navbar.classList.toggle('shadow-lg', window.scrollY > 50);
+    });
+</script>
 
-        // Auto hide alerts
-        setTimeout(() => {
-            document.querySelectorAll('[role="alert"]').forEach(alert => {
-                alert.style.transition = 'opacity 0.5s';
-                alert.style.opacity = '0';
-                setTimeout(() => alert.remove(), 500);
-            });
-        }, 5000);
-    </script>
+@stack('scripts')
 
-    @stack('scripts')
 </body>
 </html>

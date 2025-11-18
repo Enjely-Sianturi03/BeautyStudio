@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Page Header -->
-<section class="bg-gradient-to-r from-purple-900 to-pink-900 py-12">
+<section class="bg-gradient-to-r from-pink-700 to-pink-500 py-12">
     <div class="container mx-auto px-4">
         <div class="text-center text-white">
             <h1 class="text-3xl md:text-4xl font-light mb-2">APPOINTMENT DETAILS</h1>
@@ -14,7 +14,7 @@
 </section>
 
 <!-- Appointment Details -->
-<section class="py-20 bg-gray-50">
+<section class="py-20 bg-white-100">
     <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto">
             <!-- Breadcrumb -->
@@ -29,11 +29,11 @@
             <!-- Status Banner -->
             <div class="mb-8">
                 @if($appointment->status == 'pending')
-                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6">
+                <div class="bg-white-900 border-l-4 border-pink-900 p-6">
                     <div class="flex">
-                        <i class="fas fa-clock text-yellow-400 text-3xl mr-4"></i>
+                        <i class="fas fa-clock text-pink-400 text-3xl mr-4"></i>
                         <div>
-                            <h3 class="text-lg font-semibold text-yellow-900 mb-1">Pending Confirmation</h3>
+                            <h3 class="text-lg font-semibold text-pink-900 mb-1">Pending Confirmation</h3>
                             <p class="text-yellow-800">Your appointment is pending confirmation. We'll contact you shortly to confirm your booking.</p>
                         </div>
                     </div>
@@ -74,9 +74,12 @@
             <!-- Appointment Card -->
             <div class="bg-white shadow-xl rounded-lg overflow-hidden">
                 <!-- Header -->
-                <div class="bg-gradient-to-r from-gray-900 to-gray-700 p-8 text-white">
-                    <h2 class="text-3xl font-light mb-2">{{ $appointment->service->name }}</h2>
-                    <p class="text-gray-300">{{ $appointment->appointment_date->format('l, F d, Y') }} at {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('g:i A') }}</p>
+                <div class="bg-gradient-to-r from-pink-900 to-pink-700 p-8 text-white">
+                    <h2 class="text-3xl font-light mb-2">{{ $appointment->service?->name ?? 'Service tidak tersedia' }}</h2>
+                    <p class="text-gray-300">
+                        {{ $appointment->appointment_date->format('l, F d, Y') }} at 
+                        {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('g:i A') }}
+                    </p>
                 </div>
 
                 <!-- Body -->
@@ -90,28 +93,28 @@
                                     <i class="fas fa-cut text-gray-400 mr-3 mt-1"></i>
                                     <div>
                                         <p class="text-sm text-gray-600">Service</p>
-                                        <p class="font-medium">{{ $appointment->service->name }}</p>
+                                        <p class="font-medium">{{ $appointment->service?->name ?? '-' }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-start">
                                     <i class="fas fa-clock text-gray-400 mr-3 mt-1"></i>
                                     <div>
                                         <p class="text-sm text-gray-600">Duration</p>
-                                        <p class="font-medium">{{ $appointment->service->formatted_duration }}</p>
+                                        <p class="font-medium">{{ $appointment->service?->formatted_duration ?? '-' }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-start">
                                     <i class="fas fa-dollar-sign text-gray-400 mr-3 mt-1"></i>
                                     <div>
                                         <p class="text-sm text-gray-600">Price</p>
-                                        <p class="font-medium text-2xl">${{ number_format($appointment->service->price, 2) }}</p>
+                                        <p class="font-medium text-2xl">${{ number_format($appointment->service?->price ?? 0, 2) }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-start">
                                     <i class="fas fa-tag text-gray-400 mr-3 mt-1"></i>
                                     <div>
                                         <p class="text-sm text-gray-600">Category</p>
-                                        <p class="font-medium capitalize">{{ $appointment->service->category }}</p>
+                                        <p class="font-medium capitalize">{{ $appointment->service?->category ?? '-' }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -121,6 +124,14 @@
                         <div>
                             <h3 class="text-xl font-semibold mb-4 pb-2 border-b">Appointment Information</h3>
                             <div class="space-y-4">
+                                 <div class="flex items-start">
+                                 <i class="fas fa-user text-gray-400 mr-3 mt-1"></i>
+                                 <div>
+                                      <p class="text-sm text-gray-600">Name</p>
+                                      <p class="font-medium">{{ $appointment->name ?? $appointment->user?->name ?? '-' }}</p>
+                                 </div>
+                                 </div>
+
                                 <div class="flex items-start">
                                     <i class="fas fa-calendar-alt text-gray-400 mr-3 mt-1"></i>
                                     <div>
@@ -139,8 +150,8 @@
                                     <i class="fas fa-user-tie text-gray-400 mr-3 mt-1"></i>
                                     <div>
                                         <p class="text-sm text-gray-600">Stylist</p>
-                                        <p class="font-medium">{{ $appointment->stylist->name }}</p>
-                                        @if($appointment->stylist->experience_years)
+                                        <p class="font-medium">{{ $appointment->stylist?->name ?? 'Stylist belum ditentukan' }}</p>
+                                        @if($appointment->stylist?->experience_years)
                                         <p class="text-sm text-gray-500">{{ $appointment->stylist->experience_years }} years experience</p>
                                         @endif
                                     </div>
@@ -172,7 +183,7 @@
                     </div>
                     @endif
 
-                    @if($appointment->admin_notes && Auth::user()->isAdmin())
+                    @if($appointment->admin_notes && Auth::user()?->isAdmin())
                     <div class="mb-8">
                         <h3 class="text-xl font-semibold mb-4 pb-2 border-b">Admin Notes</h3>
                         <div class="bg-yellow-50 p-4 rounded-lg">
@@ -184,7 +195,34 @@
                     <!-- Service Description -->
                     <div class="mb-8">
                         <h3 class="text-xl font-semibold mb-4 pb-2 border-b">About This Service</h3>
-                        <p class="text-gray-700 leading-relaxed">{{ $appointment->service->description }}</p>
+                        <p class="text-gray-700 leading-relaxed">{{ $appointment->service?->description ?? '-' }}</p>
+                    </div>
+
+                    <!-- Payment Details -->
+                    <div class="mb-8">
+                       <h3 class="text-xl font-semibold mb-4 pb-2 border-b">Payment Details</h3>
+
+                       <div class="space-y-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-wallet text-gray-400 mr-3 mt-1"></i>
+                                <div>
+                                    <p class="text-sm text-gray-600">Payment Method</p>
+                                    <p class="font-medium">{{ $appointment->payment_method ?? '-' }}</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start">
+                                <i class="fas fa-image text-gray-400 mr-3 mt-1"></i>
+                                <div>
+                                    <p class="text-sm text-gray-600">Payment Proof</p>
+                                    @if($appointment->payment_proof)
+                                        <img src="{{ asset('storage/' . $appointment->payment_proof) }}" class="w-64 rounded-lg shadow border mt-2">
+                                    @else
+                                        <p class="text-gray-500 italic">No payment proof uploaded.</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Location Info -->
@@ -211,7 +249,7 @@
                 <div class="bg-gray-50 p-8 border-t">
                     <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
                         <a href="{{ route('appointments.index') }}" 
-                           class="flex-1 text-center border-2 border-gray-400 px-6 py-3 hover:bg-gray-100 transition font-medium">
+                           class="flex-1 text-center border-2 border-gray-400 px-6 py-3 hover:bg-gray-900 hover:text-white transition font-medium">
                             <i class="fas fa-arrow-left mr-2"></i> BACK TO APPOINTMENTS
                         </a>
                         
@@ -238,7 +276,7 @@
 
             <!-- Additional Info -->
             @if(in_array($appointment->status, ['pending', 'confirmed']))
-            <div class="mt-8 bg-blue-50 border border-blue-200 p-6 rounded-lg">
+            <div class="mt-8 bg-red-50 border border-green-200 p-6 rounded-lg">
                 <h3 class="font-semibold text-blue-900 mb-3">Important Information</h3>
                 <ul class="space-y-2 text-sm text-blue-800">
                     <li class="flex items-start">

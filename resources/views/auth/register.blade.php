@@ -5,7 +5,7 @@
 @section('content')
 <div class="min-h-screen bg-pink-50 flex justify-center items-center py-10">
     <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
-        <h2 class="text-3xl font-bold text-center text-pink-600 mb-6">💖 Daftar Akun Beauty Studio</h2>
+        <h2 class="text-3xl font-bold text-center text-pink-600 mb-6">Daftar Akun Beauty Studio</h2>
 
         @if(session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
