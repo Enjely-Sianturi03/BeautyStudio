@@ -9,43 +9,33 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    /**
-     * Tampilkan form register.
-     */
     public function showRegister()
     {
         return view('auth.register');
     }
 
-    /**
-     * Proses data registrasi user baru.
-     */
     public function register(Request $request)
     {
-        // Validasi input
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
         ]);
 
-        // Simpan ke database
+        // Default role otomatis (misalnya customer)
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'customer', // otomatis jadi customer
         ]);
 
-        // Redirect ke halaman login
         return redirect('/login')->with('success', 'Registrasi berhasil! Silakan login.');
     }
 
-    /**
-     * Tampilkan form login.
-     */
+
     public function showLogin()
     {
-        // Jika sudah login, arahkan ke dashboard
         if (Auth::check()) {
             return redirect('/home');
         }
@@ -53,34 +43,33 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    /**
-     * Proses login user.
-     */
     public function login(Request $request)
-    {
-        // Validasi input
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        {
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
 
-        // Coba autentikasi user
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+            if (Auth::attempt($credentials)) {
+                $request->session()->regenerate();
+                $user = Auth::user(); 
+                switch ($user->role) {
+                    case 'admin':
+                        return redirect()->intended('/admin/dashboard'); 
+                    case 'owner':
+                        return redirect()->intended('/owner/dashboard');
+                    case 'pegawai':
+                        return redirect()->intended('/pegawai/dashboard');
+                    default:
+                        return redirect()->intended('/home'); 
+                }
+            }
 
-            // Arahkan ke halaman home (dashboard)
-            return redirect()->intended('/home');
+            return back()->withErrors([
+                'email' => 'Email atau password salah.',
+            ])->onlyInput('email');
         }
 
-        // Jika gagal login
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
-    }
-
-    /**
-     * Logout user.
-     */
     public function logout(Request $request)
     {
         Auth::logout();
@@ -88,7 +77,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Arahkan ke halaman login, bukan root /
         return redirect('/login')->with('success', 'Anda telah logout.');
     }
 }

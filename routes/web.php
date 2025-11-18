@@ -1,4 +1,4 @@
-<?php
+apa ini akan merusak kode perubahan dri ku ato teman ku <?php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
@@ -62,8 +62,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/home', function () {
-        return view('home');
-    })->name('dashboard');
+        return view('customer.dashboard');
+    })->name('customer.dashboard');
 
     // Appointments
     Route::resource('appointments', AppointmentController::class);
@@ -93,7 +93,7 @@ Route::get('/owner/dashboard', [OwnerController::class, 'dashboard'])->name('own
 
 /*
 |--------------------------------------------------------------------------
-| Admin Review Management (NEW - SAFE ADDITION)
+| Admin Review Management
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
