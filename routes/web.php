@@ -1,4 +1,4 @@
-apa ini akan merusak kode perubahan dri ku ato teman ku <?php
+<?php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
