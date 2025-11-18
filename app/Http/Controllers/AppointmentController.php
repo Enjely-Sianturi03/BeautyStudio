@@ -35,60 +35,97 @@ class AppointmentController extends Controller
     /**
      * Show the form for creating a new appointment.
      */
-    public function create(Request $request)
-    {
-        $services = Service::active()->get();
-        $stylists = Stylist::active()->get();
+    // public function create(Request $request)
+    // {
+    //     $services = Service::active()->get();
+    //     $stylists = Stylist::active()->get();
         
-        $selectedService = null;
-        if ($request->has('service_id')) {
-            $selectedService = Service::find($request->service_id);
-        }
+    //     $selectedService = null;
+    //     if ($request->has('service_id')) {
+    //         $selectedService = Service::find($request->service_id);
+    //     }
 
-        return view('appointments.create', compact('services', 'stylists', 'selectedService'));
-    }
+    //     return view('appointments.create', compact('services', 'stylists', 'selectedService'));
+    // }
+    public function create(Request $request)
+{
+    $services = Service::active()->get();
+    $stylists = Stylist::active()->get();
+
+    $selectedService = $request->has('service_id') 
+        ? Service::find($request->service_id) 
+        : null;
+
+    // AMBIL SEMUA APPOINTMENTS USER
+    $appointments = Auth::user()->appointments()
+        ->with(['service', 'stylist'])
+        ->get();
+
+    return view('appointments.create', compact(
+        'services',
+        'stylists',
+        'selectedService',
+        'appointments' // ✅ wajib ada
+    ));
+}
+
 
     /**
-     * Store a newly created appointment.
+     * Store a newly created appointment WITH PAYMENT.
      */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'service_id' => 'required|exists:services,id',
-            'stylist_id' => 'required|exists:stylists,id',
-            'appointment_date' => 'required|date|after:today',
-            'appointment_time' => 'required',
-            'notes' => 'nullable|string|max:500'
-        ]);
+ public function store(Request $request)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255', // ✅ Tambah nama
+        'service_id' => 'required|exists:services,id',
+        'stylist_id' => 'nullable|exists:stylists,id',
+        'appointment_date' => 'required|date|after:today',
+        'appointment_time' => 'required',
+        'notes' => 'nullable|string|max:500',
 
-        // Check if stylist is available at that time
-        $existingAppointment = Appointment::where('stylist_id', $validated['stylist_id'])
-            ->where('appointment_date', $validated['appointment_date'])
-            ->where('appointment_time', $validated['appointment_time'])
-            ->whereIn('status', ['pending', 'confirmed'])
-            ->exists();
+        'payment_method' => 'required|string',
+        'payment_proof' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
 
-        if ($existingAppointment) {
-            return back()->withErrors([
-                'appointment_time' => 'This time slot is already booked. Please choose another time.'
-            ])->withInput();
-        }
+    // Jika tidak pakai stylist
+    $validated['stylist_id'] = $request->stylist_id ?? null;
 
-        $validated['user_id'] = Auth::id();
-        $validated['status'] = 'pending';
+    // Cek jadwal bentrok
+    $existingAppointment = Appointment::where('appointment_date', $validated['appointment_date'])
+        ->where('appointment_time', $validated['appointment_time'])
+        ->whereIn('status', ['pending', 'confirmed'])
+        ->exists();
 
-        $appointment = Appointment::create($validated);
-
-        return redirect()->route('appointments.show', $appointment)
-            ->with('success', 'Appointment booked successfully! We will confirm your appointment shortly.');
+    if ($existingAppointment) {
+        return back()->withErrors([
+            'appointment_time' => 'This time slot is already booked.'
+        ])->withInput();
     }
+
+    // Upload bukti
+    $proofPath = $request->file('payment_proof')->store('payment_proofs', 'public');
+    $validated['payment_proof'] = $proofPath;
+
+    // Tambahkan user ID & status
+    $validated['user_id'] = Auth::id();
+    $validated['status'] = 'pending';
+
+    // ✅ Tambahkan name ke database
+    $validated['name'] = $request->name;
+
+    // Simpan
+    $appointment = Appointment::create($validated);
+
+    return redirect()->route('appointments.show', $appointment)
+        ->with('success', 'Appointment booked successfully!');
+}
+
 
     /**
      * Display the specified appointment.
      */
     public function show(Appointment $appointment)
     {
-        // Check if user owns this appointment
         if ($appointment->user_id !== Auth::id() && !Auth::user()->isAdmin()) {
             abort(403);
         }
@@ -101,7 +138,6 @@ class AppointmentController extends Controller
      */
     public function cancel(Appointment $appointment)
     {
-        // Check if user owns this appointment
         if ($appointment->user_id !== Auth::id() && !Auth::user()->isAdmin()) {
             abort(403);
         }

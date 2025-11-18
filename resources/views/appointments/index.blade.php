@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Page Header -->
-<section class="bg-gradient-to-r from-gray-900 to-gray-700 py-16">
+<section class="bg-gradient-to-r from-pink-700 to-pink-900 py-16">
     <div class="container mx-auto px-4">
         <h1 class="text-4xl md:text-5xl font-light text-white text-center">MY APPOINTMENTS</h1>
     </div>
@@ -19,7 +19,7 @@
                 <div class="flex justify-between items-center mb-8">
                     <h2 class="text-3xl font-light">Upcoming Appointments</h2>
                     <a href="{{ route('appointments.create') }}" 
-                       class="bg-black text-white px-6 py-3 hover:bg-gray-800 transition font-medium">
+                       class="bg-pink-600 text-white px-6 py-3 hover:bg-pink-500 transition font-medium">
                         <i class="fas fa-plus mr-2"></i> NEW APPOINTMENT
                     </a>
                 </div>
@@ -36,12 +36,12 @@
                                     </span>
                                 </div>
                                 
-                                <h3 class="text-2xl font-medium mb-2">{{ $appointment->service->name }}</h3>
+                                <h3 class="text-2xl font-medium mb-2">{{ $appointment->service->name ?? 'Service tidak ditemukan' }}</h3>
                                 
                                 <div class="space-y-2 text-gray-600">
                                     <p class="flex items-center">
                                         <i class="fas fa-calendar-alt mr-3 text-gray-400"></i>
-                                        <strong>{{ $appointment->appointment_date->format('l, F d, Y') }}</strong>
+                                        <strong>{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('l, F d, Y') }}</strong>
                                     </p>
                                     <p class="flex items-center">
                                         <i class="fas fa-clock mr-3 text-gray-400"></i>
@@ -49,11 +49,11 @@
                                     </p>
                                     <p class="flex items-center">
                                         <i class="fas fa-user-tie mr-3 text-gray-400"></i>
-                                        {{ $appointment->stylist->name }}
+                                        {{ $appointment->stylist->name ?? 'Belum ditentukan' }}
                                     </p>
                                     <p class="flex items-center">
                                         <i class="fas fa-dollar-sign mr-3 text-gray-400"></i>
-                                        ${{ number_format($appointment->service->price, 2) }}
+                                        ${{ number_format($appointment->service->price ?? 0, 2) }}
                                     </p>
                                 </div>
 
@@ -115,12 +115,12 @@
                                     </span>
                                 </div>
                                 
-                                <h3 class="text-xl font-medium mb-2">{{ $appointment->service->name }}</h3>
+                                <h3 class="text-xl font-medium mb-2">{{ $appointment->service->name ?? 'Service tidak ditemukan' }}</h3>
                                 
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
                                     <div>
                                         <i class="fas fa-calendar mr-2 text-gray-400"></i>
-                                        {{ $appointment->appointment_date->format('M d, Y') }}
+                                        {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('M d, Y') }}
                                     </div>
                                     <div>
                                         <i class="fas fa-clock mr-2 text-gray-400"></i>
@@ -128,11 +128,11 @@
                                     </div>
                                     <div>
                                         <i class="fas fa-user-tie mr-2 text-gray-400"></i>
-                                        {{ $appointment->stylist->name }}
+                                        {{ $appointment->stylist->name ?? 'Belum ditentukan' }}
                                     </div>
                                     <div>
                                         <i class="fas fa-dollar-sign mr-2 text-gray-400"></i>
-                                        ${{ number_format($appointment->service->price, 2) }}
+                                        ${{ number_format($appointment->service->price ?? 0, 2) }}
                                     </div>
                                 </div>
                             </div>

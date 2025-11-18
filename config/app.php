@@ -4,12 +4,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Name
+    | Nama Aplikasi
     |--------------------------------------------------------------------------
     |
-    | This value is the name of your application, which will be used when the
-    | framework needs to place the application's name in a notification or
-    | other UI elements where an application name needs to be displayed.
+    | Nilai ini adalah nama aplikasi kamu. Akan digunakan di notifikasi atau
+    | elemen UI lain yang menampilkan nama aplikasi.
     |
     */
 
@@ -17,12 +16,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Environment
+    | Lingkungan Aplikasi
     |--------------------------------------------------------------------------
     |
-    | This value determines the "environment" your application is currently
-    | running in. This may determine how you prefer to configure various
-    | services the application utilizes. Set this in your ".env" file.
+    | Menentukan environment aplikasi saat ini, seperti "production" atau "local".
+    | Diatur melalui file .env
     |
     */
 
@@ -30,12 +28,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Debug Mode
+    | Mode Debug
     |--------------------------------------------------------------------------
     |
-    | When your application is in debug mode, detailed error messages with
-    | stack traces will be shown on every error that occurs within your
-    | application. If disabled, a simple generic error page is shown.
+    | Jika mode debug aktif, detail error akan ditampilkan. Jika tidak,
+    | hanya pesan error umum yang muncul.
     |
     */
 
@@ -43,12 +40,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application URL
+    | URL Aplikasi
     |--------------------------------------------------------------------------
     |
-    | This URL is used by the console to properly generate URLs when using
-    | the Artisan command line tool. You should set this to the root of
-    | the application so that it's available within Artisan commands.
+    | URL utama aplikasi. Digunakan oleh Artisan CLI dan konfigurasi URL lain.
     |
     */
 
@@ -56,42 +51,36 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Timezone
+    | Zona Waktu Aplikasi
     |--------------------------------------------------------------------------
     |
-    | Here you may specify the default timezone for your application, which
-    | will be used by the PHP date and date-time functions. The timezone
-    | is set to "UTC" by default as it is suitable for most use cases.
+    | Zona waktu default untuk aplikasi. Diubah ke waktu Indonesia (WIB).
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Jakarta',
 
     /*
     |--------------------------------------------------------------------------
-    | Application Locale Configuration
+    | Pengaturan Bahasa Aplikasi
     |--------------------------------------------------------------------------
     |
-    | The application locale determines the default locale that will be used
-    | by Laravel's translation / localization methods. This option can be
-    | set to any locale for which you plan to have translation strings.
+    | Bahasa default untuk aplikasi. Diset ke Bahasa Indonesia.
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'id'),
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'id'),
 
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+    'faker_locale' => env('APP_FAKER_LOCALE', 'id_ID'),
 
     /*
     |--------------------------------------------------------------------------
-    | Encryption Key
+    | Kunci Enkripsi
     |--------------------------------------------------------------------------
     |
-    | This key is utilized by Laravel's encryption services and should be set
-    | to a random, 32 character string to ensure that all encrypted values
-    | are secure. You should do this prior to deploying the application.
+    | Digunakan oleh sistem enkripsi Laravel.
     |
     */
 
@@ -107,14 +96,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Maintenance Mode Driver
+    | Driver Mode Pemeliharaan
     |--------------------------------------------------------------------------
     |
-    | These configuration options determine the driver used to determine and
-    | manage Laravel's "maintenance mode" status. The "cache" driver will
-    | allow maintenance mode to be controlled across multiple machines.
+    | Menentukan cara aplikasi menangani mode maintenance.
     |
-    | Supported drivers: "file", "cache"
+    | Opsi: "file", "cache"
     |
     */
 

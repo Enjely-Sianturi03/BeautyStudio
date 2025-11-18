@@ -11,13 +11,13 @@
             <!-- Logo/Header -->
             <div class="text-center mb-8">
                 <a href="{{ route('home') }}" class="inline-block">
-                    <h1 class="text-4xl font-serif font-bold text-gray-900 mb-2">ARTIKA SALON</h1>
+                    <h1 class="text-4xl font-serif font-bold text-pink-600 mb-2">Beauty Studio</h1>
                 </a>
-                <p class="text-gray-600 text-lg">Welcome back!</p>
+                <p class="text-pink-600 text-lg">Welcome back!</p>
             </div>
 
             <!-- Login Card -->
-            <div class="bg-white rounded-lg shadow-2xl overflow-hidden">
+            <div class="bg-pink-50 rounded-lg shadow-2xl overflow-hidden">
                 <div class="p-8 md:p-10">
                     <h2 class="text-3xl font-light text-center mb-8">Login to Your Account</h2>
 
@@ -108,7 +108,7 @@
 
                         <!-- Submit Button -->
                         <button type="submit" 
-                                class="w-full bg-black text-white py-3 px-4 rounded-lg hover:bg-gray-800 transition font-medium text-lg flex items-center justify-center">
+                                class="w-full bg-pink-500 text-white py-3 px-4 rounded-lg hover:bg-pink-800 transition font-medium text-lg flex items-center justify-center">
                             <i class="fas fa-sign-in-alt mr-2"></i>
                             LOGIN
                         </button>
