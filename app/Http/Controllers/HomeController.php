@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Layanan;
 use App\Models\Service;
 use App\Models\Tip;
 use App\Models\Stylist;
@@ -22,7 +23,7 @@ class HomeController extends Controller
         
         // Ambil 6 layanan aktif
         $services = Service::active()
-            ->orderBy('category')
+            ->orderBy('created_at', 'desc') 
             ->take(6)
             ->get();
         

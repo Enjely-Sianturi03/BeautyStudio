@@ -10,15 +10,19 @@ class Service extends Model
     use HasFactory;
 
     /**
+     * Nama tabel di database
+     */
+    protected $table = 'services'; // atau 'layanans' jika tabel admin pakai nama ini
+
+    /**
      * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * DISESUAIKAN dengan field admin: nama, durasi_menit, harga, deskripsi
      */
     protected $fillable = [
-        'name',
-        'description',
-        'price',
-        'duration',
+        'nama',           // dari admin
+        'deskripsi',      // dari admin
+        'harga',          // dari admin
+        'durasi_menit',   // dari admin
         'category',
         'image',
         'is_active',
@@ -26,11 +30,9 @@ class Service extends Model
 
     /**
      * The attributes that should be cast.
-     *
-     * @var array<string, string>
      */
     protected $casts = [
-        'price' => 'decimal:2',
+        'harga' => 'decimal:2',
         'is_active' => 'boolean',
     ];
 
@@ -58,21 +60,57 @@ class Service extends Model
         return $query->where('category', $category);
     }
 
+    // ==========================================
+    // ACCESSOR untuk KOMPATIBILITAS dengan home.blade.php
+    // ==========================================
+    
     /**
-     * Get formatted price.
+     * Accessor: $service->name (dari field 'nama')
      */
-    public function getFormattedPriceAttribute()
+    public function getNameAttribute()
     {
-        return '$' . number_format($this->price, 2);
+        return $this->attributes['nama'] ?? '';
     }
 
     /**
-     * Get duration in hours and minutes.
+     * Accessor: $service->description (dari field 'deskripsi')
+     */
+    public function getDescriptionAttribute()
+    {
+        return $this->attributes['deskripsi'] ?? '';
+    }
+
+    /**
+     * Accessor: $service->price (dari field 'harga')
+     */
+    public function getPriceAttribute()
+    {
+        return $this->attributes['harga'] ?? 0;
+    }
+
+    /**
+     * Accessor: $service->duration (dari field 'durasi_menit')
+     */
+    public function getDurationAttribute()
+    {
+        return $this->attributes['durasi_menit'] ?? 0;
+    }
+
+    /**
+     * Get formatted price: $50.00
+     */
+    public function getFormattedPriceAttribute()
+    {
+        return '$' . number_format($this->harga, 0); // Tanpa desimal untuk Rupiah
+    }
+
+    /**
+     * Get duration in hours and minutes: "1h 30m" atau "45m"
      */
     public function getFormattedDurationAttribute()
     {
-        $hours = floor($this->duration / 60);
-        $minutes = $this->duration % 60;
+        $hours = floor($this->durasi_menit / 60);
+        $minutes = $this->durasi_menit % 60;
         
         if ($hours > 0 && $minutes > 0) {
             return "{$hours}h {$minutes}m";

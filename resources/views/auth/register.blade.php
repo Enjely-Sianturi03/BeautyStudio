@@ -28,6 +28,12 @@
             </div>
 
             <div>
+                <label class="block font-semibold text-gray-700">Nomor Telepon</label>
+                <input type="text" name="telepon" class="w-full p-3 border rounded-lg" placeholder="Masukkan No Telp" required>
+                @error('telepon') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            <div>
                 <label class="block font-semibold text-gray-700">Password</label>
                 <input type="password" name="password" class="w-full p-3 border rounded-lg" placeholder="Buat password" required>
                 @error('password') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror

@@ -126,7 +126,7 @@
 </section>
 
 
-<!-- TIPS PREVIEW SECTION (GANTI BAGIAN GALERI) -->
+<!-- TIPS PREVIEW SECTION  -->
 @if(isset($tips) && $tips->count() > 0)
 <section class="py-20 bg-white">
     <div class="container mx-auto px-4">

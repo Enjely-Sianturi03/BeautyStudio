@@ -8,10 +8,8 @@ use App\Http\Controllers\TipController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\PelangganController;
-use App\Http\Controllers\LayananController;
-use App\Http\Controllers\TransaksiController;
-use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\TransaksiController; // FIXED: Using the Admin namespace
+use App\Http\Controllers\LaporanController;   // Keeping root LaporanController for now
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmployeeController;
@@ -21,37 +19,37 @@ use App\Http\Controllers\ContactController;
 
 /*
 |--------------------------------------------------------------------------
-| Contact
+| Public Routes
 |--------------------------------------------------------------------------
 */
+
+// Home
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Services (Public)
+Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+Route::get('/services/{service}', [ServiceController::class, 'show'])->name('services.show');
+
+// Tips (Public)
+Route::get('/tips', [TipController::class, 'index'])->name('tips.index');
+Route::get('/tips/{id}', [TipController::class, 'show'])->name('tips.show');
+
+// Booking (Public)
+Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
+Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
+
+// Contact (Public)
+Route::get('/contact', function () {
+    return view('contacts.contact');
+})->name('contact');
 Route::post('/contact/send', [ContactController::class, 'send'])->name('contact.send');
 
-/*
-|--------------------------------------------------------------------------
-| Reviews (Public Submit)
-|--------------------------------------------------------------------------
-*/
+// Reviews (Public Submit)
 Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
 /*
 |--------------------------------------------------------------------------
-| Public Routes
-|--------------------------------------------------------------------------
-*/
-Route::get('/', [HomeController::class, 'index'])->name('home');
-
-Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
-Route::get('/services/{service}', [ServiceController::class, 'show'])->name('services.show');
-
-Route::get('/tips', [TipController::class, 'index'])->name('tips.index');
-Route::get('/tips/{id}', [TipController::class, 'show'])->name('tips.show');
-
-Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
-Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
-
-/*
-|--------------------------------------------------------------------------
-| Authentication
+| Authentication Routes
 |--------------------------------------------------------------------------
 */
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -62,15 +60,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 /*
 |--------------------------------------------------------------------------
-| Protected Routes (Login Required)
+| Customer Routes (Login Required)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
-
-    // Route::get('/home', function () {
-    //     return view('customer.dashboard');
-    // })->name('customer.dashboard');
-
+    
     // Appointments
     Route::resource('appointments', AppointmentController::class);
     Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])
@@ -84,86 +78,98 @@ Route::middleware(['auth'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Employee & Owner
-|--------------------------------------------------------------------------
-*/
-Route::get('/pegawai', [EmployeeController::class, 'index'])
-    ->middleware('auth')
-    ->name('employee.dashboard');
-
-Route::post('/pegawai/layanan/{id}/selesai', [EmployeeController::class, 'completeAppointment'])
-    ->middleware('auth')
-    ->name('employee.appointment.complete');
-
-Route::get('/owner/dashboard', [OwnerController::class, 'dashboard'])->name('owner.dashboard');
-
-// Tambahan route untuk cetak PDF transaksi
-Route::get('/owner/transactions/pdf', [OwnerController::class, 'exportTransactionsPdf'])
-     ->name('owner.transactions.pdf');
-/*
-|--------------------------------------------------------------------------
-| Admin Review Management
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth'])->group(function () {
-
-Route::middleware(['auth', 'role:pegawai'])
-    ->prefix('pegawai')
-    ->name('pegawai.')
-    ->group(function () {
-        Route::get('/dashboard', [EmployeeController::class, 'index'])->name('dashboard');
-        Route::post('/layanan/{id}/selesai', [EmployeeController::class, 'completeAppointment'])
-            ->name('appointment.complete');
-        Route::get('/jadwal', [EmployeeController::class, 'schedule'])->name('jadwal');
-        Route::get('/riwayat', [EmployeeController::class, 'history'])->name('riwayat');
-        Route::post('/layanan/{id}/selesai', [EmployeeController::class, 'completeAppointment'])
-            ->name('appointment.complete');
-    });
-
-    // Admin menyetujui review
-    Route::post('/admin/reviews/{id}/approve', [ReviewController::class, 'approve'])
-        ->name('admin.reviews.approve');
-
-    // Admin menghapus review
-    Route::delete('/admin/reviews/{id}', [ReviewController::class, 'destroy'])
-        ->name('admin.reviews.destroy');
-});
-
-/*
-|--------------------------------------------------------------------------
-| Contact Page
-|--------------------------------------------------------------------------
-*/
-Route::get('/contact', function () {
-    return view('contacts.contact');
-})->name('contact');
-
-/*
-|--------------------------------------------------------------------------
 | ADMIN ROUTES (Role: admin)
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-
-        // CRUD Data Master
-        Route::resource('services', ServiceController::class)->except(['index', 'show']);
-        Route::resource('appointments', AppointmentController::class)->except(['create', 'store', 'show']);
-        Route::resource('gallery', GalleryController::class)->except(['index']);
-        Route::resource('pelanggan', PelangganController::class)->only(['index','store','update','destroy']);
-        Route::resource('layanan', LayananController::class)->only(['index','store','update','destroy']);
+        
+        // Dashboard
+        Route::get('/', [AdminController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [AdminController::class, 'index']); // Alias
+        
+        // Layanan Management (Service)
+        Route::get('/layanan', [AdminController::class, 'layananIndex'])->name('layanan.index');
+        Route::post('/layanan', [AdminController::class, 'layananStore'])->name('layanan.store');
+        Route::delete('/layanan/{service}', [AdminController::class, 'layananDestroy'])->name('layanan.destroy');
+        Route::post('/layanan/{service}/toggle', [AdminController::class, 'layananToggleStatus'])->name('layanan.toggle');
+        
+        // Pelanggan Management
+        Route::get('/pelanggan', [AdminController::class, 'pelangganIndex'])->name('pelanggan.index');
+        Route::post('/pelanggan', [AdminController::class, 'pelangganStore'])->name('pelanggan.store');
+        Route::put('/pelanggan/{user}', [AdminController::class, 'pelangganUpdate'])->name('pelanggan.update'); // Menggunakan {user} untuk Route Model Binding
+        Route::delete('/pelanggan/{user}', [AdminController::class, 'pelangganDestroy'])->name('pelanggan.destroy');
+        
+        // Jadwal Management
         Route::resource('jadwal', JadwalController::class)->only(['index','store','update','destroy']);
+        
+        // Transaksi Management (FIXED: Using Admin\TransaksiController)
         Route::resource('transaksi', TransaksiController::class)->only(['index','store']);
-
-        // Laporan
+        // NEW: Route untuk Update Status Transaksi
+        Route::put('/transaksi/{transaksi}/update-status', [TransaksiController::class, 'updateStatus'])
+             ->name('transaksi.update-status');
+        
+        // Appointments Management
+        Route::resource('appointments', AppointmentController::class)->except(['create', 'store', 'show']);
+        
+        // Review Management
+        Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index'); // Added index route for review admin panel
+        Route::post('/reviews/{id}/approve', [ReviewController::class, 'approve'])->name('reviews.approve');
+        Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+        
+        // Laporan (RESTORED: Using root LaporanController)
         Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
         Route::get('/laporan/export', [LaporanController::class, 'exportCsv'])->name('laporan.export');
-
-        // Tambahan Admin
+        
+        // User Management
         Route::get('/users', [AdminController::class, 'users'])->name('users');
+        
+        // Reports
         Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+    });
+
+/*
+|--------------------------------------------------------------------------
+| EMPLOYEE ROUTES (Role: pegawai)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:pegawai'])
+    ->prefix('pegawai')
+    ->name('pegawai.')
+    ->group(function () {
+        
+        // Dashboard
+        Route::get('/', [EmployeeController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [EmployeeController::class, 'index']); // Alias
+        
+        // Complete Appointment
+        Route::post('/layanan/{id}/selesai', [EmployeeController::class, 'completeAppointment'])
+            ->name('appointment.complete');
+        
+        // Schedule
+        Route::get('/jadwal', [EmployeeController::class, 'schedule'])->name('jadwal');
+        
+        // History
+        Route::get('/riwayat', [EmployeeController::class, 'history'])->name('riwayat');
+    });
+
+/*
+|--------------------------------------------------------------------------
+| OWNER ROUTES (Role: owner)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:owner'])
+    ->prefix('owner')
+    ->name('owner.')
+    ->group(function () {
+        
+        // Dashboard
+        Route::get('/', [OwnerController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard', [OwnerController::class, 'dashboard']); // Alias
+        
+        // Export Transactions PDF
+        Route::get('/transactions/pdf', [OwnerController::class, 'exportTransactionsPdf'])
+            ->name('transactions.pdf');
     });

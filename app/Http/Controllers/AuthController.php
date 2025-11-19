@@ -61,7 +61,7 @@ class AuthController extends Controller
                     case 'pegawai':
                         return redirect()->intended('/pegawai/dashboard');
                     default:
-                        return redirect()->intended('/home'); 
+                        return redirect()->intended('/'); 
                 }
             }
 

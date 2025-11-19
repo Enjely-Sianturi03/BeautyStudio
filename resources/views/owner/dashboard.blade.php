@@ -107,60 +107,100 @@
             </div>
         </div>
 
-        <!-- Kelola Layanan -->
-        <section id="layanan" class="bg-white p-6 rounded-xl shadow-md">
-            <h2 class="text-xl font-semibold text-pink-800 mb-4">Kelola Layanan</h2>
-            <form class="mb-4 flex gap-3">
-                <input type="text" placeholder="Nama Layanan" class="border border-pink-300 rounded-lg px-4 py-2 flex-1">
-                <input type="number" placeholder="Harga (Rp)" class="border border-pink-300 rounded-lg px-4 py-2 w-40">
-                <button class="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-500">Tambah</button>
-            </form>
+    <!-- Kelola Layanan -->
+    <section id="layanan" class="bg-white p-6 rounded-xl shadow-md">
+        <h2 class="text-xl font-semibold text-pink-800 mb-4">Kelola Layanan</h2>
+        
+        <!-- Form Tambah Layanan -->
+        <form method="POST" action="{{ route('admin.layanan.store') }}" class="mb-4 flex gap-3">
+            @csrf
+            <input type="text" name="nama" placeholder="Nama Layanan" class="border border-pink-300 rounded-lg px-4 py-2 flex-1" required>
+            <input type="number" name="harga" placeholder="Harga (Rp)" class="border border-pink-300 rounded-lg px-4 py-2 w-40" required>
+            <!-- Tambahkan input Durasi Menit sesuai Controller -->
+            <input type="number" name="durasi_menit" placeholder="Durasi (Menit)" class="border border-pink-300 rounded-lg px-4 py-2 w-40" required>
+            
+            <button type="submit" class="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-500 transition duration-150">
+                Tambah
+            </button>
+        </form>
+
+        <!-- Tabel Layanan (DATA DINAMIS) -->
+        <div class="overflow-x-auto">
             <table class="min-w-full text-sm border border-pink-200 rounded-lg">
                 <thead class="bg-pink-100 text-pink-600 uppercase text-xs">
                     <tr>
-                        <th class="px-4 py-2">Nama</th>
-                        <th class="px-4 py-2">Harga</th>
+                        <th class="px-4 py-2 text-left">Nama</th>
+                        <th class="px-4 py-2 text-left">Harga</th>
+                        <th class="px-4 py-2 text-left">Durasi</th>
                         <th class="px-4 py-2 text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="border-b">
-                        <td class="px-4 py-2">Hair Spa</td>
-                        <td class="px-4 py-2">Rp 150.000</td>
-                        <td class="px-4 py-2 text-center">
-                            <button class="text-pink-500 hover:underline">Edit</button> |
-                            <button class="text-pink-700 hover:underline">Hapus</button>
+                    @forelse($services as $service)
+                    <tr class="border-b hover:bg-pink-50">
+                        <td class="px-4 py-2">{{ $service->nama }}</td>
+                        <td class="px-4 py-2">Rp {{ number_format($service->harga, 0, ',', '.') }}</td>
+                        <td class="px-4 py-2">{{ $service->durasi_menit }} Menit</td>
+                        <td class="px-4 py-2 text-center flex items-center justify-center space-x-2">
+                            
+                            {{-- Tautan Edit dihilangkan atau dikomentari untuk menghindari RouteNotFoundException --}}
+                            {{-- <a href="{{ route('admin.layanan.edit', $service) }}" class="text-pink-500 hover:underline">Edit</a> | --}}
+                            
+                            <!-- Form Hapus -->
+                            <form method="POST" action="{{ route('admin.layanan.destroy', $service->id) }}" class="inline" onsubmit="return confirm('Hapus layanan {{ $service->nama }}?')">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="text-pink-700 hover:underline">Hapus</button>
+                            </form>
                         </td>
                     </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="px-4 py-4 text-center text-gray-500">Belum ada layanan yang ditambahkan.</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
-        </section>
+        </div>
+    </section>
 
-        <!-- Kelola Pelanggan -->
-        <section id="pelanggan" class="bg-white p-6 rounded-xl shadow-md">
-            <h2 class="text-xl font-semibold text-pink-800 mb-4">Daftar Pelanggan</h2>
+    <!-- Kelola Pelanggan -->
+    <section id="pelanggan" class="bg-white p-6 rounded-xl shadow-md">
+        <h2 class="text-xl font-semibold text-pink-800 mb-4">Daftar Pelanggan</h2>
+        
+        <!-- Tabel Pelanggan (DATA DINAMIS) -->
+        <div class="overflow-x-auto">
             <table class="min-w-full text-sm border border-pink-200 rounded-lg">
                 <thead class="bg-pink-100 text-pink-600 uppercase text-xs">
                     <tr>
-                        <th class="px-4 py-2">Nama</th>
-                        <th class="px-4 py-2">Email</th>
-                        <th class="px-4 py-2">No. HP</th>
+                        <th class="px-4 py-2 text-left">Nama</th>
+                        <th class="px-4 py-2 text-left">Email</th>
+                        <th class="px-4 py-2 text-left">Telepon</th> 
+                        <th class="px-4 py-2 text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="border-b">
-                        <td class="px-4 py-2">Dewi</td>
-                        <td class="px-4 py-2">dewi@gmail.com</td>
-                        <td class="px-4 py-2">08123456789</td>
+                    @forelse($customers as $customer)
+                    <tr class="border-b hover:bg-pink-50">
+                        <td class="px-4 py-2">{{ $customer->name }}</td>
+                        <td class="px-4 py-2">{{ $customer->email }}</td>
+                        <td class="px-4 py-2">{{ $customer->telepon ?? '-' }}</td> 
+                        <td class="px-4 py-2 text-center">
+                            <!-- Aksi Hapus Pelanggan -->
+                            <form method="POST" action="{{ route('admin.pelanggan.destroy', $customer->id) }}" class="inline" onsubmit="return confirm('Hapus pelanggan {{ $customer->name }}?')">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="text-pink-700 hover:underline">Hapus</button>
+                            </form>
+                        </td>
                     </tr>
-                    <tr class="border-b">
-                        <td class="px-4 py-2">Rani</td>
-                        <td class="px-4 py-2">rani@gmail.com</td>
-                        <td class="px-4 py-2">08198765432</td>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="px-4 py-4 text-center text-gray-500">Belum ada data pelanggan.</td>
                     </tr>
+                    @endforelse
                 </tbody>
             </table>
-        </section>
+        </div>
+    </section>
 
         <!-- Laporan Pendapatan -->
         <section id="laporan" class="bg-white p-6 rounded-xl shadow-md">

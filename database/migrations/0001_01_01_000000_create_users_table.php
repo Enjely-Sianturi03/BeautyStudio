@@ -17,9 +17,23 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('phone')->nullable();
-            $table->text('address')->nullable();
-            $table->string('role')->default('pegawai');
+            
+            // Perbaikan 1: Mengubah 'phone' menjadi 'telepon' agar konsisten dengan form/controller Indonesia
+            // Jika Anda ingin menggunakan 'phone', pastikan Model User dan Controller juga menggunakan 'phone'.
+            $table->string('telepon', 15)->nullable(); 
+            
+            // Perbaikan 2: Mengubah 'address' menjadi 'alamat' untuk konsistensi
+            // Gunakan string jika alamat pendek, atau text jika sangat panjang.
+            $table->string('alamat')->nullable();
+            
+            // Perbaikan 3: Menambahkan 'profile_picture' (Sesuai Model User Anda)
+            $table->string('profile_picture')->nullable();
+            
+            // Perbaikan 4: Mengubah default role. Default 'customer' lebih umum untuk pendaftar biasa.
+            // Atau pertahankan 'pegawai' jika memang ini adalah aplikasi internal.
+            // Saya ubah menjadi 'customer' karena ini adalah Beauty Studio.
+            $table->string('role')->default('customer'); 
+            
             $table->rememberToken();
             $table->timestamps();
         });
@@ -29,6 +43,8 @@ return new class extends Migration
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
+        
+        // Note: 'password_resets' diganti 'password_reset_tokens' di Laravel 10/11
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
