@@ -17,6 +17,7 @@ class Appointment extends Model
      */
     protected $fillable = [
         'user_id',
+        'name',
         'service_id',
         'stylist_id',
         'appointment_date',
@@ -24,7 +25,10 @@ class Appointment extends Model
         'status',
         'notes',
         'admin_notes',
+        'payment_method',
+        'payment_proof',
     ];
+
 
     /**
      * The attributes that should be cast.
