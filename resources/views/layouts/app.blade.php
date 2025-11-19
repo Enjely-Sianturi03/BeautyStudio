@@ -15,6 +15,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+
     <!-- TailwindCSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -134,6 +135,7 @@
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
             <div class="container mx-auto px-4 py-4 space-y-4">
 
+
                 <a href="{{ route('home') }}" class="block text-primary font-medium">HOME</a>
                 <a href="{{ route('tips.index') }}" class="block text-gray-700 hover:text-primary">TIPS</a>
                 <a href="{{ route('contact') }}" class="block text-gray-700 hover:text-primary">CONTACT</a>
@@ -189,10 +191,10 @@
                 <div>
                     <h4 class="text-lg font-semibold mb-4">QUICK LINKS</h4>
                     <ul class="space-y-2">
+
                         <li><a href="{{ route('services.index') }}" class="text-pink-100 hover:text-white">Services</a></li>
                         <li><a href="{{ route('tips.index') }}" class="text-pink-100 hover:text-white">Tips</a></li>
                         <li><a href="{{ route('appointments.create') }}" class="text-pink-100 hover:text-white">Book Appointment</a></li>
-
                         @auth
                         <li><a href="{{ route('appointments.index') }}" class="text-pink-100 hover:text-white">My Appointments</a></li>
                         @endauth
@@ -236,6 +238,29 @@
         </div>
     </footer>
 
+<!-- <<<<<<< HEAD
+    <script>
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) navbar.classList.add('shadow-lg');
+            else navbar.classList.remove('shadow-lg');
+        });
+
+
+        // Auto hide alerts
+        setTimeout(() => {
+            document.querySelectorAll('[role="alert"]').forEach(alert => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 5000);
+    </script>
+======= -->
 <script>
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');

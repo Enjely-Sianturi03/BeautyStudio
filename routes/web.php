@@ -97,6 +97,9 @@ Route::post('/pegawai/layanan/{id}/selesai', [EmployeeController::class, 'comple
 
 Route::get('/owner/dashboard', [OwnerController::class, 'dashboard'])->name('owner.dashboard');
 
+// Tambahan route untuk cetak PDF transaksi
+Route::get('/owner/transactions/pdf', [OwnerController::class, 'exportTransactionsPdf'])
+     ->name('owner.transactions.pdf');
 /*
 |--------------------------------------------------------------------------
 | Admin Review Management
