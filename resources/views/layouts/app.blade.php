@@ -51,14 +51,6 @@
 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-8">
-<<<<<<< HEAD
-                    <a href="{{ route('home') }}" class="text-gray-700 hover:text-gray-900 transition font-medium {{ request()->routeIs('home') ? 'border-b-2 border-gray-900' : '' }}">HOME</a>
-                    <a href="{{ route('services.index') }}" class="text-gray-700 hover:text-gray-900 transition font-medium {{ request()->routeIs('services.*') ? 'border-b-2 border-gray-900' : '' }}">SERVICES</a>
-                    
-                    {{-- <a href="{{ route('gallery.index') }}" class="text-gray-700 hover:text-gray-900 transition font-medium {{ request()->routeIs('gallery.*') ? 'border-b-2 border-gray-900' : '' }}">GALLERY</a> --}}
-                    
-                    <a href="#contact" class="text-gray-700 hover:text-gray-900 transition font-medium">CONTACT</a>
-=======
 
                     <a href="{{ route('home') }}"
                         class="text-gray-700 hover:text-primary transition font-medium
@@ -77,7 +69,6 @@
                         {{ request()->routeIs('contact') ? 'border-b-2 border-primary' : '' }}">
                         CONTACT
                     </a>
->>>>>>> b9d34b37e7669b20fccced3889299141d3f4c5a0
 
                     @auth
                         <a href="{{ route('appointments.index') }}"
@@ -143,19 +134,11 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
             <div class="container mx-auto px-4 py-4 space-y-4">
-<<<<<<< HEAD
-                <a href="{{ route('home') }}" class="block text-gray-700 hover:text-gray-900 transition font-medium">HOME</a>
-                <a href="{{ route('services.index') }}" class="block text-gray-700 hover:text-gray-900 transition font-medium">SERVICES</a>
-                
-                {{-- <a href="{{ route('gallery.index') }}" class="block text-gray-700 hover:text-gray-900 transition font-medium">GALLERY</a> --}}
-                
-                <a href="#contact" class="block text-gray-700 hover:text-gray-900 transition font-medium">CONTACT</a>
-=======
+
 
                 <a href="{{ route('home') }}" class="block text-primary font-medium">HOME</a>
                 <a href="{{ route('tips.index') }}" class="block text-gray-700 hover:text-primary">TIPS</a>
                 <a href="{{ route('contact') }}" class="block text-gray-700 hover:text-primary">CONTACT</a>
->>>>>>> b9d34b37e7669b20fccced3889299141d3f4c5a0
 
                 @auth
                     <a href="{{ route('appointments.index') }}" class="block">MY APPOINTMENTS</a>
@@ -208,16 +191,10 @@
                 <div>
                     <h4 class="text-lg font-semibold mb-4">QUICK LINKS</h4>
                     <ul class="space-y-2">
-<<<<<<< HEAD
-                        <li><a href="{{ route('services.index') }}" class="text-gray-400 hover:text-white transition">Services</a></li>
-                        {{-- <li><a href="{{ route('gallery.index') }}" class="text-gray-400 hover:text-white transition">Gallery</a></li> --}}
-                        <li><a href="{{ route('appointments.create') }}" class="text-gray-400 hover:text-white transition">Book Appointment</a></li>
-=======
+
                         <li><a href="{{ route('services.index') }}" class="text-pink-100 hover:text-white">Services</a></li>
                         <li><a href="{{ route('tips.index') }}" class="text-pink-100 hover:text-white">Tips</a></li>
                         <li><a href="{{ route('appointments.create') }}" class="text-pink-100 hover:text-white">Book Appointment</a></li>
-
->>>>>>> b9d34b37e7669b20fccced3889299141d3f4c5a0
                         @auth
                         <li><a href="{{ route('appointments.index') }}" class="text-pink-100 hover:text-white">My Appointments</a></li>
                         @endauth
@@ -261,7 +238,7 @@
         </div>
     </footer>
 
-<<<<<<< HEAD
+<!-- <<<<<<< HEAD
     <script>
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -283,7 +260,7 @@
             });
         }, 5000);
     </script>
-=======
+======= -->
 <script>
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -296,7 +273,6 @@
 </script>
 
 @stack('scripts')
->>>>>>> b9d34b37e7669b20fccced3889299141d3f4c5a0
 
 </body>
 </html>

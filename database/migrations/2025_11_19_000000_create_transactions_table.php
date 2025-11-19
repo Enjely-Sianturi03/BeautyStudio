@@ -9,8 +9,16 @@ return new class extends Migration {
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained()->onDelete('cascade');
-            $table->foreignId('service_id')->constrained()->onDelete('cascade');
+
+            // FOREIGN KEY ke tabel pelanggans (bukan customers)
+            $table->foreignId('customer_id')
+                  ->constrained('pelanggans')
+                  ->onDelete('cascade');
+
+            $table->foreignId('service_id')
+                  ->constrained()
+                  ->onDelete('cascade');
+
             $table->integer('total');
             $table->date('date');
             $table->timestamps();

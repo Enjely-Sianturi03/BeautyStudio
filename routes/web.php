@@ -91,11 +91,9 @@ Route::post('/pegawai/layanan/{id}/selesai', [EmployeeController::class, 'comple
 
 Route::get('/owner/dashboard', [OwnerController::class, 'dashboard'])->name('owner.dashboard');
 
-<<<<<<< HEAD
 // Tambahan route untuk cetak PDF transaksi
 Route::get('/owner/transactions/pdf', [OwnerController::class, 'exportTransactionsPdf'])
      ->name('owner.transactions.pdf');
-=======
 /*
 |--------------------------------------------------------------------------
 | Admin Review Management
@@ -124,4 +122,3 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/contact', function () {
     return view('contacts.contact');
 })->name('contact');
->>>>>>> b9d34b37e7669b20fccced3889299141d3f4c5a0
