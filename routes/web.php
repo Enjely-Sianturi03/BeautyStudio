@@ -72,14 +72,16 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-// ROUTE BARU: Untuk menampilkan dashboard pegawai (GET)
 Route::get('/pegawai', [EmployeeController::class, 'index'])
     ->middleware('auth')
-    ->name('employee.dashboard'); // Gunakan nama ini jika Anda ingin menavigasi ke sana
+    ->name('employee.dashboard'); 
     
-// ROUTE LAMA: Untuk aksi menyelesaikan layanan (POST)
 Route::post('/pegawai/layanan/{id}/selesai', [EmployeeController::class, 'completeAppointment'])
     ->middleware('auth')
     ->name('employee.appointment.complete');
 
 Route::get('/owner/dashboard', [OwnerController::class, 'dashboard'])->name('owner.dashboard');
+
+// Tambahan route untuk cetak PDF transaksi
+Route::get('/owner/transactions/pdf', [OwnerController::class, 'exportTransactionsPdf'])
+     ->name('owner.transactions.pdf');

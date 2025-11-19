@@ -15,15 +15,11 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<<<<<<< HEAD
-    <!-- Scripts -->
-    <script src="https://cdn.tailwindcss.com"></script>
-=======
+
     <!-- TailwindCSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Alpine.js for interactive UI -->
->>>>>>> 7831b29bf5c26abc5d2b7033d5a5584c173ab7a4
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     <style>
@@ -245,28 +241,14 @@
     <script>
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
-<<<<<<< HEAD
-        mobileMenuButton.addEventListener('click', function() {
-            mobileMenu.classList.toggle('hidden');
-        });
-=======
         mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
 
-        // Navbar scroll effect
->>>>>>> 7831b29bf5c26abc5d2b7033d5a5584c173ab7a4
         window.addEventListener('scroll', function() {
             const navbar = document.getElementById('navbar');
             if (window.scrollY > 50) navbar.classList.add('shadow-lg');
             else navbar.classList.remove('shadow-lg');
         });
-<<<<<<< HEAD
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('[role="alert"]');
-            alerts.forEach(function(alert) {
-                alert.style.transition = 'opacity 0.5s';
-                alert.style.opacity = '0';
-                setTimeout(function() { alert.remove(); }, 500);
-=======
+
 
         // Auto hide alerts
         setTimeout(() => {
@@ -274,7 +256,6 @@
                 alert.style.transition = 'opacity 0.5s';
                 alert.style.opacity = '0';
                 setTimeout(() => alert.remove(), 500);
->>>>>>> 7831b29bf5c26abc5d2b7033d5a5584c173ab7a4
             });
         }, 5000);
     </script>
