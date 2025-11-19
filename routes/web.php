@@ -8,6 +8,12 @@ use App\Http\Controllers\TipController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\LayananController;
+use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\JadwalController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\ReviewController;
@@ -61,9 +67,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 */
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/home', function () {
-        return view('customer.dashboard');
-    })->name('customer.dashboard');
+    // Route::get('/home', function () {
+    //     return view('customer.dashboard');
+    // })->name('customer.dashboard');
 
     // Appointments
     Route::resource('appointments', AppointmentController::class);
@@ -128,3 +134,33 @@ Route::middleware(['auth', 'role:pegawai'])
 Route::get('/contact', function () {
     return view('contacts.contact');
 })->name('contact');
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN ROUTES (Role: admin)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+
+        // CRUD Data Master
+        Route::resource('services', ServiceController::class)->except(['index', 'show']);
+        Route::resource('appointments', AppointmentController::class)->except(['create', 'store', 'show']);
+        Route::resource('gallery', GalleryController::class)->except(['index']);
+        Route::resource('pelanggan', PelangganController::class)->only(['index','store','update','destroy']);
+        Route::resource('layanan', LayananController::class)->only(['index','store','update','destroy']);
+        Route::resource('jadwal', JadwalController::class)->only(['index','store','update','destroy']);
+        Route::resource('transaksi', TransaksiController::class)->only(['index','store']);
+
+        // Laporan
+        Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+        Route::get('/laporan/export', [LaporanController::class, 'exportCsv'])->name('laporan.export');
+
+        // Tambahan Admin
+        Route::get('/users', [AdminController::class, 'users'])->name('users');
+        Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+    });
