@@ -11,7 +11,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OwnerController;
-use App\Http\Controllers\Employee\ProductController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\{
     PelangganController, LayananController, JadwalController,
     TransaksiController, LaporanController
@@ -116,7 +116,7 @@ Route::middleware(['auth'])
 |-------------------------------------------------------------------------- 
 */
 
-Route::middleware(['auth','role:employee'])->prefix('pegawai')->name('employee.')->group(function () {
+Route::middleware(['auth'])->prefix('pegawai')->name('employee.')->group(function () {
     // dashboard
     Route::get('/', [EmployeeController::class, 'index'])->name('dashboard');
 
