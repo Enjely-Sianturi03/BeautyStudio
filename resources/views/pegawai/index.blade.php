@@ -25,13 +25,16 @@
 
             {{-- Gunakan $todayAppointments dari controller --}}
             @php
-                // contoh dummy — ganti dengan $todayAppointments dari backend
-                $todayAppointments = $todayAppointments ?? [
-                    (object)['id'=>1,'time'=>'10:00','client'=>'Salwa Halila','service'=>'Hair Cut & Wash','status'=>'Pending'],
-                    (object)['id'=>2,'time'=>'12:30','client'=>'Willy Armando','service'=>'Manicure & Pedicure','status'=>'Ongoing'],
-                    (object)['id'=>3,'time'=>'14:00','client'=>'Cindy Artika','service'=>'Coloring & Blow Dry','status'=>'Completed'],
-                ];
+            // Jika variabel tidak ada atau kosong, pakai dummy (untuk debugging)
+            if (!isset($todayAppointments) || (is_countable($todayAppointments) && count($todayAppointments) === 0)) {
+                $todayAppointments = [
+            (object)['id'=>1,'time'=>'10:00','client'=>'Salwa Halila','service'=>'Hair Cut & Wash','status'=>'Pending'],
+            (object)['id'=>2,'time'=>'12:30','client'=>'Willy Armando','service'=>'Manicure & Pedicure','status'=>'Ongoing'],
+            (object)['id'=>3,'time'=>'14:00','client'=>'Cindy Artika','service'=>'Coloring & Blow Dry','status'=>'Completed'],
+                 ];
+             }
             @endphp
+
 
             @if(count($todayAppointments) > 0)
                 <div class="space-y-4">

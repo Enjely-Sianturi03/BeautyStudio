@@ -11,6 +11,8 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OwnerController;
+use App\Http\Controllers\PegawaiCustomerController;
+use App\Http\Controllers\PegawaiReportController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\{
     PelangganController, LayananController, JadwalController,
