@@ -11,6 +11,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OwnerController;
+use App\Http\Controllers\Employee\ProductController;
 use App\Http\Controllers\{
     PelangganController, LayananController, JadwalController,
     TransaksiController, LaporanController
@@ -81,11 +82,6 @@ Route::middleware(['auth'])->group(function () {
 | ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
-/*
-|-------------------------------------------------------------------------- 
-| ADMIN ROUTES
-|-------------------------------------------------------------------------- 
-*/
 
 Route::middleware(['auth'])
     ->prefix('admin')
@@ -112,4 +108,32 @@ Route::middleware(['auth'])
     // Tambahan opsional
     Route::get('users', [AdminController::class, 'users'])->name('users');
     Route::get('reports', [AdminController::class, 'reports'])->name('reports');
+});
+
+/*
+|-------------------------------------------------------------------------- 
+| KARYAWAN ROUTES
+|-------------------------------------------------------------------------- 
+*/
+
+Route::middleware(['auth','role:employee'])->prefix('pegawai')->name('employee.')->group(function () {
+    // dashboard
+    Route::get('/', [EmployeeController::class, 'index'])->name('dashboard');
+
+    // list pelanggan (halaman index)
+    Route::get('/customers', [EmployeeController::class, 'customers'])->name('customers');
+
+    // riwayat pelanggan (terima param identifier name/id)
+    Route::get('/customers/{customer}/history', [EmployeeController::class, 'customerHistory'])->name('customer.history');
+
+    // mulai & selesaikan appointment
+    Route::post('/appointments/{id}/start', [AppointmentController::class, 'start'])->name('appointment.start');
+    Route::post('/appointments/{id}/complete', [AppointmentController::class, 'complete'])->name('appointment.complete');
+
+    // request restock
+    Route::post('/products/request-restock', [ProductController::class, 'requestRestock'])->name('request.restock');
+
+    // products & reports
+    Route::get('/products', [ProductController::class, 'index'])->name('products');
+    Route::get('/reports', [EmployeeController::class, 'reports'])->name('reports');
 });

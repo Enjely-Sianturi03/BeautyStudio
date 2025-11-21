@@ -1,28 +1,40 @@
 <?php
+namespace App\Http\Controllers\Employee;
 
-namespace App\Http\Controllers;
-
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Customer;
+use App\Models\Appointment;
 
 class EmployeeController extends Controller
 {
-    public function index() 
+    public function index()
     {
-        return view('pegawai.index');
+        $todayAppointments = Appointment::whereDate('date', now())->get();
+        $lowStockProducts = []; // ambil dari Product::where('stock','<',threshold)->get();
+
+        $adminMessage = 'Cek stok produk sebelum memulai layanan yang membutuhkan material.';
+
+        return view('pegawai.index', compact('todayAppointments','lowStockProducts','adminMessage'));
     }
 
-    public function completeAppointment($id)
+    public function customers()
     {
-        dd("Route Berhasil Dipanggil! ID: " . $id);
-        // 1. Cari Janji Temu berdasarkan ID
-        $appointment = Appointment::findOrFail($id);
-        
-        // 2. Perbarui status menjadi 'Completed'
-        $appointment->status = 'Completed';
-        $appointment->completion_time = now(); 
-        $appointment->save();
+        $customers = Customer::paginate(20);
+        return view('pegawai.customers.index', compact('customers'));
+    }
 
-        // 3. Redirect kembali dengan pesan sukses
-        return redirect()->route('employee.dashboard')->with('success', 'Layanan untuk ' . $appointment->client_name . ' telah berhasil diselesaikan dan dicatat!');
+    public function customerHistory($customer)
+    {
+        // Bisa terima id atau slug; sesuaikan dengan modelmu
+        $cust = Customer::where('id', $customer)->orWhere('slug', $customer)->firstOrFail();
+        $history = $cust->appointments()->latest()->get();
+        return view('pegawai.customers.history', compact('cust','history'));
+    }
+
+    public function reports()
+    {
+        // implementasi sesuai kebutuhan
+        return view('pegawai.reports.index');
     }
 }
