@@ -22,7 +22,7 @@ class TransaksiController extends Controller
             'pelanggan_id'=>'required|exists:pelanggans,id',
             'jadwal_id'=>'nullable|exists:jadwals,id',
             'metode'=>'required|in:cash,qris,transfer',
-            'items'=>'required|array|min:1',
+            'items'=>'required|array|min:1', 
             'items.*.layanan_id'=>'required|exists:layanans,id',
             'items.*.qty'=>'required|integer|min:1'
         ]);
