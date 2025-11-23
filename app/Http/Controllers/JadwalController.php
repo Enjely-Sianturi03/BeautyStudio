@@ -2,46 +2,70 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Jadwal;
-use App\Models\Layanan;
-use App\Models\Pelanggan;
+use App\Models\Appointment;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class JadwalController extends Controller
 {
-    public function index() {
-        $data = Jadwal::with(['pelanggan','layanan'])->latest('mulai_at')->paginate(10);
-        $pelanggans = Pelanggan::orderBy('nama')->get();
-        $layanans = Layanan::orderBy('nama')->get();
-        return view('admin.jadwal.index', compact('data','pelanggans','layanans'));
+    public function index()
+    {
+        $appointments = Appointment::with(['user','service','staff'])
+            ->orderBy('appointment_date', 'asc')
+            ->orderBy('appointment_time', 'asc')
+            ->get();
+
+        // Ambil staf (role = staff / pegawai)
+        $staff = User::where('role', 'staff')->get();
+
+        return view('admin.jadwal.index', compact('appointments','staff'));
     }
 
-    public function store(Request $request) {
-        $val = $request->validate([
-            'pelanggan_id'=>'required|exists:pelanggans,id',
-            'layanan_id'=>'required|exists:layanans,id',
-            'staf'=>'nullable|string|max:100',
-            'mulai_at'=>'required|date',
-            'status'=>'required|in:dijadwalkan,selesai,batal'
+
+    public function show($id)
+    {
+        $appointment = Appointment::with(['user','service','staff'])
+            ->findOrFail($id);
+
+        // Ambil semua staf (role staff / stylist)
+        $staff = User::where('role', 'staff')->get();
+
+        return view('admin.jadwal.show', compact('appointment', 'staff'));
+    }
+
+
+
+    public function update(Request $request, $id)
+    {
+        $appointment = Appointment::findOrFail($id);
+        $appointment->stylist_id = $request->stylist_id;
+        $appointment->save();
+
+        return back()->with('success', 'Staf berhasil diperbarui!');
+    }
+
+
+    public function destroy($id)
+    {
+        Appointment::findOrFail($id)->delete();
+
+        return back()->with('success', 'Jadwal berhasil dihapus!');
+    }
+
+    public function assignStaff(Request $request, $id)
+    {
+        $request->validate([
+            'staff_id' => 'required|exists:users,id',
         ]);
-        Jadwal::create($val);
-        return back()->with('ok','Jadwal dibuat');
+
+        $appointment = Appointment::findOrFail($id);
+
+        $appointment->staff_id = $request->staff_id;
+        $appointment->save();
+
+        return redirect()->route('admin.jadwal.show', $appointment->id)
+                        ->with('success', 'Staf berhasil ditetapkan!');
     }
 
-    public function update(Request $request, Jadwal $jadwal) {
-        $val = $request->validate([
-            'pelanggan_id'=>'required|exists:pelanggans,id',
-            'layanan_id'=>'required|exists:layanans,id',
-            'staf'=>'nullable|string|max:100',
-            'mulai_at'=>'required|date',
-            'status'=>'required|in:dijadwalkan,selesai,batal'
-        ]);
-        $jadwal->update($val);
-        return back()->with('ok','Jadwal diupdate');
-    }
 
-    public function destroy(Jadwal $jadwal) {
-        $jadwal->delete();
-        return back()->with('ok','Jadwal dihapus');
-    }
 }

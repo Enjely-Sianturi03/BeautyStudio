@@ -6,42 +6,37 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-       Schema::create('appointments', function (Blueprint $table) {
-    $table->id();
+        Schema::create('appointments', function (Blueprint $table) {
+            $table->id();
 
-    $table->foreignId('user_id')
-          ->constrained('users')
-          ->onDelete('cascade');
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->onDelete('cascade');
 
-    $table->foreignId('service_id')
-          ->constrained('services')
-          ->onDelete('cascade');
+            $table->foreignId('service_id')
+                ->constrained('services')
+                ->onDelete('cascade');
 
-    $table->foreignId('stylist_id')
-          ->nullable()
-          ->constrained('stylists')
-          ->nullOnDelete();
+            $table->foreignId('stylist_id')
+                ->nullable()
+                ->constrained('stylists')
+                ->nullOnDelete();
 
-    $table->date('appointment_date');
-    $table->time('appointment_time');
+            $table->date('appointment_date');
+            $table->time('appointment_time');
 
-    $table->enum('status', ['pending','confirmed','completed','cancelled'])
-          ->default('pending');
+            $table->enum('status', ['pending', 'confirmed', 'completed', 'cancelled'])
+                ->default('pending');
 
-    $table->text('notes')->nullable();
-    $table->text('admin_notes')->nullable();
+            $table->text('notes')->nullable();
+            $table->text('admin_notes')->nullable();
 
-    $table->timestamps();
-});
+            $table->timestamps();
+        });
     }
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
         Schema::dropIfExists('appointments');

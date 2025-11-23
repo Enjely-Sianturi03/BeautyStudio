@@ -10,16 +10,11 @@ class Appointment extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'user_id',
         'name',
         'service_id',
-        'stylist_id',
+        'staff_id',
         'appointment_date',
         'appointment_time',
         'status',
@@ -29,89 +24,87 @@ class Appointment extends Model
         'payment_proof',
     ];
 
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'appointment_date' => 'date',
         'appointment_time' => 'datetime:H:i',
     ];
 
-    /**
-     * Get the user that owns the appointment.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the service for the appointment.
-     */
     public function service()
     {
         return $this->belongsTo(Service::class);
     }
 
-    /**
-     * Get the stylist for the appointment.
-     */
-    public function stylist()
+    // FIX — relasi staf
+    public function staff()
     {
-        return $this->belongsTo(Stylist::class);
+        return $this->belongsTo(User::class, 'staff_id');
     }
 
-    /**
-     * Scope a query to only include pending appointments.
-     */
-    public function scopePending($query)
+    // === SCOPES ===
+
+    public function scopePending($q)
     {
-        return $query->where('status', 'pending');
+        return $q->where('status', 'pending');
     }
 
-    /**
-     * Scope a query to only include confirmed appointments.
-     */
-    public function scopeConfirmed($query)
+    public function scopeConfirmed($q)
     {
-        return $query->where('status', 'confirmed');
+        return $q->where('status', 'confirmed');
     }
 
-    /**
-     * Scope a query to only include upcoming appointments.
-     */
-    public function scopeUpcoming($query)
+    public function scopeUpcoming($q)
     {
-        return $query->where('appointment_date', '>=', now()->toDateString())
-            ->whereIn('status', ['pending', 'confirmed']);
+        return $q->where('appointment_date', '>=', now()->toDateString())
+                 ->whereIn('status', ['pending', 'confirmed']);
     }
 
-    /**
-     * Scope a query to only include past appointments.
-     */
-    public function scopePast($query)
+    public function scopePast($q)
     {
-        return $query->where('appointment_date', '<', now()->toDateString())
-            ->orWhere('status', 'completed');
+        return $q->where(function ($q) {
+            $q->where('appointment_date', '<', now()->toDateString())
+              ->orWhere('status', 'completed');
+        });
     }
 
-    /**
-     * Get formatted date and time.
-     */
+    // === ACCESSORS ===
+
+    public function getFormattedDateAttribute()
+    {
+        return Carbon::parse($this->appointment_date)->format('d M Y');
+    }
+
+    public function getFormattedTimeAttribute()
+    {
+        return Carbon::parse($this->appointment_time)->format('H:i');
+    }
+
     public function getFormattedDateTimeAttribute()
     {
-        return $this->appointment_date->format('F d, Y') . ' at ' . Carbon::parse($this->appointment_time)->format('g:i A');
+        return Carbon::parse($this->appointment_date)->format('d M Y') . 
+               ' - ' . 
+               Carbon::parse($this->appointment_time)->format('H:i');
     }
 
-    /**
-     * Check if appointment can be cancelled.
-     */
     public function canBeCancelled(): bool
     {
-        return in_array($this->status, ['pending', 'confirmed']) 
-            && $this->appointment_date->isFuture();
+        return in_array($this->status, ['pending', 'confirmed']) &&
+               $this->appointment_date->isFuture();
     }
+
+    public function stylist()
+    {
+        return $this->belongsTo(Stylist::class, 'stylist_id');
+    }
+
+    public function transaksi()
+    {
+        return $this->hasOne(Transaksi::class);
+    }
+
+
 }

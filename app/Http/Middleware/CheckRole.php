@@ -32,7 +32,7 @@ class CheckRole
                 case 'pegawai':
                     return redirect()->route('pegawai.dashboard');
                 case 'customer':
-                    return redirect()->route('customer.dashboard');
+                    return redirect('/');
                 default:
                     return redirect('/');
             }

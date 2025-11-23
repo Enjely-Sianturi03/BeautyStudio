@@ -8,8 +8,8 @@ use App\Http\Controllers\TipController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TransaksiController; // FIXED: Using the Admin namespace
-use App\Http\Controllers\LaporanController;   // Keeping root LaporanController for now
+use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmployeeController;
@@ -19,37 +19,25 @@ use App\Http\Controllers\ContactController;
 
 /*
 |--------------------------------------------------------------------------
-| Public Routes
+| PUBLIC ROUTES
 |--------------------------------------------------------------------------
 */
-
-// Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Services (Public)
-Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
-Route::get('/services/{service}', [ServiceController::class, 'show'])->name('services.show');
+Route::resource('services', ServiceController::class)->only(['index', 'show']);
+Route::resource('tips', TipController::class)->only(['index', 'show']);
 
-// Tips (Public)
-Route::get('/tips', [TipController::class, 'index'])->name('tips.index');
-Route::get('/tips/{id}', [TipController::class, 'show'])->name('tips.show');
-
-// Booking (Public)
 Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
 Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 
-// Contact (Public)
-Route::get('/contact', function () {
-    return view('contacts.contact');
-})->name('contact');
+Route::get('/contact', fn() => view('contacts.contact'))->name('contact');
 Route::post('/contact/send', [ContactController::class, 'send'])->name('contact.send');
 
-// Reviews (Public Submit)
 Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
 /*
 |--------------------------------------------------------------------------
-| Authentication Routes
+| AUTH ROUTES
 |--------------------------------------------------------------------------
 */
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -60,17 +48,18 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 /*
 |--------------------------------------------------------------------------
-| Customer Routes (Login Required)
+| CUSTOMER ROUTES
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
-    
-    // Appointments
-    Route::resource('appointments', AppointmentController::class);
-    Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])
-        ->name('appointments.cancel');
 
-    // Profile
+    Route::resource('appointments', AppointmentController::class)
+        ->only(['index', 'create', 'store', 'show']);
+
+    Route::post('/appointments/{appointment}/cancel', 
+        [AppointmentController::class, 'cancel']
+    )->name('appointments.cancel');
+
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
@@ -78,98 +67,143 @@ Route::middleware(['auth'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| ADMIN ROUTES (Role: admin)
+| ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        
-        // Dashboard
+
+        /* DASHBOARD */
         Route::get('/', [AdminController::class, 'index'])->name('dashboard');
-        Route::get('/dashboard', [AdminController::class, 'index']); // Alias
-        
-        // Layanan Management (Service)
+        Route::get('/dashboard', [AdminController::class, 'index']);
+
+        /*
+        |--------------------------------------------------------------------------
+        | LAYANAN MANAGEMENT
+        |--------------------------------------------------------------------------
+        */
         Route::get('/layanan', [AdminController::class, 'layananIndex'])->name('layanan.index');
         Route::post('/layanan', [AdminController::class, 'layananStore'])->name('layanan.store');
         Route::delete('/layanan/{service}', [AdminController::class, 'layananDestroy'])->name('layanan.destroy');
         Route::post('/layanan/{service}/toggle', [AdminController::class, 'layananToggleStatus'])->name('layanan.toggle');
-        
-        // Pelanggan Management
+
+        /*
+        |--------------------------------------------------------------------------
+        | PELANGGAN MANAGEMENT
+        |--------------------------------------------------------------------------
+        */
         Route::get('/pelanggan', [AdminController::class, 'pelangganIndex'])->name('pelanggan.index');
         Route::post('/pelanggan', [AdminController::class, 'pelangganStore'])->name('pelanggan.store');
-        Route::put('/pelanggan/{user}', [AdminController::class, 'pelangganUpdate'])->name('pelanggan.update'); // Menggunakan {user} untuk Route Model Binding
+        Route::put('/pelanggan/{user}', [AdminController::class, 'pelangganUpdate'])->name('pelanggan.update');
         Route::delete('/pelanggan/{user}', [AdminController::class, 'pelangganDestroy'])->name('pelanggan.destroy');
-        
-        // Jadwal Management
-        Route::resource('jadwal', JadwalController::class)->only(['index','store','update','destroy']);
-        
-        // Transaksi Management (FIXED: Using Admin\TransaksiController)
-        Route::resource('transaksi', TransaksiController::class)->only(['index','store']);
-        // NEW: Route untuk Update Status Transaksi
-        Route::put('/transaksi/{transaksi}/update-status', [TransaksiController::class, 'updateStatus'])
-             ->name('transaksi.update-status');
-        
-        // Appointments Management
-        Route::resource('appointments', AppointmentController::class)->except(['create', 'store', 'show']);
-        
-        // Review Management
-        Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index'); // Added index route for review admin panel
+
+        /*
+        |--------------------------------------------------------------------------
+        | JADWAL MANAGEMENT
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
+        Route::get('/jadwal/{id}', [JadwalController::class, 'show'])->name('jadwal.show');
+        Route::post('/jadwal/{id}/staff', [JadwalController::class, 'assignStaff'])->name('jadwal.assignStaff');
+        Route::post('/jadwal/{id}', [JadwalController::class, 'update'])->name('jadwal.update');
+        Route::delete('/jadwal/{id}', [JadwalController::class, 'destroy'])->name('jadwal.destroy');
+
+        /*
+        |--------------------------------------------------------------------------
+        | TRANSAKSI MANAGEMENT
+        |--------------------------------------------------------------------------
+        */
+        // LIST, SHOW, STORE
+        Route::resource('transaksi', TransaksiController::class)
+            ->only(['index', 'store', 'show']);
+
+        // CONFIRM
+        Route::post('/transaksi/{id}/confirm', 
+            [TransaksiController::class, 'confirm']
+        )->name('transaksi.confirm');
+
+        // CANCEL
+        Route::post('/transaksi/{id}/cancel', 
+            [TransaksiController::class, 'cancel']
+        )->name('transaksi.cancel');
+
+        // Create From Appointment
+        Route::get('/transaksi/create/from-appointment/{appointment}', 
+            [TransaksiController::class, 'createFromAppointment']
+        )->name('transaksi.createFromAppointment');
+
+        /*
+        |--------------------------------------------------------------------------
+        | ADMIN APPOINTMENTS
+        |--------------------------------------------------------------------------
+        */
+        Route::resource('appointments', AppointmentController::class)
+            ->except(['create', 'store', 'show']);
+
+        /*
+        |--------------------------------------------------------------------------
+        | REVIEW MANAGEMENT
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
         Route::post('/reviews/{id}/approve', [ReviewController::class, 'approve'])->name('reviews.approve');
         Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
-        
-        // Laporan (RESTORED: Using root LaporanController)
+
+        /*
+        |--------------------------------------------------------------------------
+        | LAPORAN
+        |--------------------------------------------------------------------------
+        */
         Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
-        Route::get('/laporan/export', [LaporanController::class, 'exportCsv'])->name('laporan.export');
-        
-        // User Management
+        Route::get('/laporan/export/csv', [LaporanController::class, 'exportCsv'])->name('laporan.export.csv');
+        Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
+
+        /*
+        |--------------------------------------------------------------------------
+        | USERS & REPORTS
+        |--------------------------------------------------------------------------
+        */
         Route::get('/users', [AdminController::class, 'users'])->name('users');
-        
-        // Reports
         Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     });
 
 /*
 |--------------------------------------------------------------------------
-| EMPLOYEE ROUTES (Role: pegawai)
+| PEGAWAI ROUTES
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:pegawai'])
     ->prefix('pegawai')
     ->name('pegawai.')
     ->group(function () {
-        
-        // Dashboard
+
         Route::get('/', [EmployeeController::class, 'index'])->name('dashboard');
-        Route::get('/dashboard', [EmployeeController::class, 'index']); // Alias
-        
-        // Complete Appointment
-        Route::post('/layanan/{id}/selesai', [EmployeeController::class, 'completeAppointment'])
-            ->name('appointment.complete');
-        
-        // Schedule
+        Route::get('/dashboard', [EmployeeController::class, 'index']);
+
+        Route::post('/appointments/{id}/complete', 
+            [EmployeeController::class, 'completeAppointment']
+        )->name('appointment.complete');
+
         Route::get('/jadwal', [EmployeeController::class, 'schedule'])->name('jadwal');
-        
-        // History
         Route::get('/riwayat', [EmployeeController::class, 'history'])->name('riwayat');
     });
 
 /*
 |--------------------------------------------------------------------------
-| OWNER ROUTES (Role: owner)
+| OWNER ROUTES
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:owner'])
     ->prefix('owner')
     ->name('owner.')
     ->group(function () {
-        
-        // Dashboard
+
         Route::get('/', [OwnerController::class, 'dashboard'])->name('dashboard');
-        Route::get('/dashboard', [OwnerController::class, 'dashboard']); // Alias
-        
-        // Export Transactions PDF
-        Route::get('/transactions/pdf', [OwnerController::class, 'exportTransactionsPdf'])
-            ->name('transactions.pdf');
+        Route::get('/dashboard', [OwnerController::class, 'dashboard']);
+
+        Route::get('/transactions/pdf', 
+            [OwnerController::class, 'exportTransactionsPdf']
+        )->name('transactions.pdf');
     });

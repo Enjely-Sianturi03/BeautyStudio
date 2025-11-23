@@ -38,8 +38,9 @@ class Stylist extends Model
      */
     public function appointments()
     {
-        return $this->hasMany(Appointment::class);
+        return $this->hasMany(Appointment::class, 'stylist_id');
     }
+
 
     /**
      * Get active appointments for the stylist.

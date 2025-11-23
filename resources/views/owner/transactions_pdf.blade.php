@@ -25,10 +25,10 @@
         <tbody>
             @foreach ($transactions as $t)
             <tr>
-                <td>{{ $t->date }}</td>
-                <td>{{ $t->customer->name }}</td>
-                <td>{{ $t->service->name }}</td>
-                <td>Rp {{ number_format($t->total, 0, ',', '.') }}</td>
+                                <td class="px-6 py-3">{{ $t->appointment_date ?? '-' }}</td>
+                                <td class="px-6 py-3">{{ $t->user->name ?? '-' }}</td>
+                                <td class="px-6 py-3">{{ $t->service->nama ?? '-' }}</td>
+                                <td class="px-6 py-3 font-semibold text-pink-700">Rp {{ number_format($t->service->harga ?? 0, 0, ',', '.') }}</td>
             </tr>
             @endforeach
         </tbody>
