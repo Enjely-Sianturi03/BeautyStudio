@@ -16,6 +16,7 @@ class Review extends Model
         'name',
         'rating',
         'message',
+        'is_approved',
     ];
 
     /**

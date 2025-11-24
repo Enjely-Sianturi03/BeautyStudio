@@ -39,6 +39,11 @@
          class="block py-2 px-3 rounded hover:bg-pink-400 {{ request()->routeIs('admin.laporan.*') ? 'bg-pink-500' : '' }}">
          Laporan
       </a>
+      <a href="{{ route('admin.reviews.index') }}"
+        class="block py-2 px-3 rounded hover:bg-pink-400 {{ request()->routeIs('admin.review.*') ? 'bg-pink-500' : '' }}">
+        Review
+      </a>
+
     </nav>
 
     <!-- Tombol Logout -->

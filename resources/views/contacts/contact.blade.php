@@ -73,7 +73,7 @@
 
                         <div class="mb-6">
                             <label for="review" class="block text-gray-700 font-medium mb-2">Tulis Ulasan Detail Anda</label>
-                            <textarea id="review" name="review" rows="5" placeholder="Bagikan pengalaman terbaik Anda..."
+                            <textarea id="message" name="message" rows="5" placeholder="Bagikan pengalaman terbaik Anda..."
                                 class="w-full p-4 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition shadow-sm"></textarea>
                         </div>
 

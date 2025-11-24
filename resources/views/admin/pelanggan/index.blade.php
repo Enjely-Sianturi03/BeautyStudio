@@ -9,7 +9,6 @@
     <input name="name" class="p-2 border rounded" placeholder="Nama" required>
     <input name="telepon" class="p-2 border rounded" placeholder="Telepon">
     <input name="email" class="p-2 border rounded" placeholder="Email">
-    <input name="alamat" class="p-2 border rounded" placeholder="Alamat">
     <input type="password" name="password" class="p-2 border rounded" placeholder="Password" required>
     
     <button class="bg-pink-500 text-white rounded px-4">+ Tambah</button>
@@ -23,7 +22,6 @@
         <th class="text-left py-2 px-3">Nama</th>
         <th class="text-left py-2 px-3">Telepon</th>
         <th class="text-left py-2 px-3">Email</th>
-        <th class="text-left py-2 px-3">Alamat</th>
         <th class="text-center py-2 px-3">Aksi</th>
       </tr>
     </thead>
@@ -33,7 +31,6 @@
         <td class="py-2 px-3">{{ $p->name }}</td>
         <td class="py-2 px-3">{{ $p->telepon }}</td>
         <td class="py-2 px-3">{{ $p->email }}</td>
-        <td class="py-2 px-3">{{ $p->alamat }}</td>
         
         <td class="py-2 px-3 text-center">
           <form method="POST" action="{{ route('admin.pelanggan.update',$p) }}" class="inline">

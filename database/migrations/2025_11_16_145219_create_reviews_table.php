@@ -14,24 +14,25 @@ return new class extends Migration
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
 
-            // User yang memberi review
+            // User yang memberi review (boleh null)
             $table->foreignId('user_id')
+                ->nullable()
                 ->constrained('users')
-                ->onDelete('cascade');
+                ->nullOnDelete();
 
-            // Layanan yang di-review
+            // Layanan yang di-review (boleh null)
             $table->foreignId('service_id')
                 ->nullable()
                 ->constrained('services')
-                ->onDelete('set null');
+                ->nullOnDelete();
 
-            // Appointment yang terkait
+            // Appointment yang terkait (boleh null)
             $table->foreignId('appointment_id')
                 ->nullable()
                 ->constrained('appointments')
-                ->onDelete('set null');
+                ->nullOnDelete();
 
-            // Nama reviewer (opsional karena sudah ada user)
+            // Nama reviewer
             $table->string('name')->nullable();
 
             // Rating 1–5
@@ -39,6 +40,9 @@ return new class extends Migration
 
             // Pesan review
             $table->text('message');
+
+            // Status disetujui admin
+            $table->boolean('is_approved')->default(false);
 
             $table->timestamps();
         });

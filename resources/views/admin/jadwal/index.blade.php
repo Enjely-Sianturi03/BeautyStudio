@@ -1,11 +1,11 @@
 @extends('layouts.admin')
-@section('title','Jadwal Booking')
-@section('page','Jadwal Booking')
+@section('title','Jadwal Layanan')
+@section('page','Jadwal Layanan')
 
 @section('content')
 
 <div class="bg-white shadow rounded p-6 mb-6 border-l-4 border-pink-400">
-    <h2 class="text-2xl font-bold mb-4 text-pink-600">Jadwal Booking Masuk</h2>
+    <h2 class="text-2xl font-bold mb-4 text-pink-600">Jadwal Layanan Masuk</h2>
 
     <table class="w-full border-collapse rounded overflow-hidden">
         <thead class="bg-pink-200">

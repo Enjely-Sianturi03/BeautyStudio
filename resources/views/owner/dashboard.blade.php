@@ -94,6 +94,63 @@
 
         </div>
 
+<!-- DATA PELANGGAN -->
+<section id="pelanggan" class="bg-white p-6 rounded-xl shadow-md mt-12">
+
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold text-pink-800">Daftar Pelanggan</h2>
+        <span class="text-sm text-gray-500">Total: {{ count($customers) }} pelanggan</span>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full text-sm border border-pink-200 rounded-lg">
+            <thead class="bg-pink-100 text-pink-600 uppercase text-xs">
+                <tr>
+                    <th class="px-4 py-3 text-left">Nama</th>
+                    <th class="px-4 py-3 text-left">Email</th>
+                    <th class="px-4 py-3 text-left">Telepon</th>
+                    <th class="px-4 py-3 text-center">Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @forelse($customers as $customer)
+                    <tr class="border-b hover:bg-pink-50 transition">
+                        <td class="px-4 py-3 font-medium">{{ $customer->name }}</td>
+                        <td class="px-4 py-3 text-gray-700">{{ $customer->email }}</td>
+                        <td class="px-4 py-3">{{ $customer->telepon ?? '-' }}</td>
+
+                        <td class="px-4 py-3 text-center">
+                            <!-- Tombol Hapus -->
+                            <form method="POST"
+                                action="{{ route('admin.pelanggan.destroy', $customer->id) }}"
+                                class="inline"
+                                onsubmit="return confirm('Hapus pelanggan {{ $customer->name }}?')">
+
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit"
+                                    class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200">
+                                    Hapus
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="px-4 py-4 text-center text-gray-500">
+                            Belum ada data pelanggan.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+</section>
+
+
         <!-- Laporan Pendapatan -->
         <section id="laporan" class="bg-white p-6 rounded-xl shadow-md">
             <h2 class="text-xl font-semibold text-pink-800 mb-4">Laporan Pendapatan Mingguan</h2>

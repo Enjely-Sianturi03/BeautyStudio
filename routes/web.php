@@ -16,6 +16,8 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -147,9 +149,10 @@ Route::middleware(['auth', 'role:admin'])
         | REVIEW MANAGEMENT
         |--------------------------------------------------------------------------
         */
-        Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
-        Route::post('/reviews/{id}/approve', [ReviewController::class, 'approve'])->name('reviews.approve');
-        Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+        Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
+        Route::post('/reviews/{id}/approve', [AdminReviewController::class, 'approve'])->name('reviews.approve');
+        Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
+
 
         /*
         |--------------------------------------------------------------------------
