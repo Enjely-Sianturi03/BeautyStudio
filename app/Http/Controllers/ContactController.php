@@ -19,4 +19,9 @@ class ContactController extends Controller
         // Untuk sementara:
         return back()->with('success', 'Pesan Anda berhasil dikirim!');
     }
+
+    public function index()
+    {
+        return view('contacts.contact');
+    }
 }

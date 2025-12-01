@@ -54,24 +54,24 @@
         Pilih Staf
     </h3>
 
-    <form action="{{ route('admin.jadwal.assignStaff', $appointment->id) }}" method="POST" class="max-w-md">
+    <form action="{{ route('admin.jadwal.update', $appointment->id) }}" method="POST">
         @csrf
+        @method('PUT')
 
-        <label class="block mb-2 font-medium text-gray-700">Staf</label>
-
-        <select name="staff_id"
-                class="border-gray-300 focus:ring-pink-400 focus:border-pink-400 p-3 w-full rounded-lg shadow-sm mb-4">
-            @foreach ($staff as $s)
-                <option value="{{ $s->id }}" {{ $appointment->staff_id == $s->id ? 'selected' : '' }}>
+        <select name="stylist_id" class="border rounded p-2 w-full">
+            <option value="">Pilih Staf</option>
+            @foreach($staff as $s)
+                <option value="{{ $s->id }}" {{ $appointment->stylist_id == $s->id ? 'selected' : '' }}>
                     {{ $s->name }}
                 </option>
             @endforeach
         </select>
 
-        <button class="bg-green-600 hover:bg-green-700 px-5 py-2 text-white font-semibold rounded-lg shadow">
+        <button class="bg-pink-500 text-white px-3 py-1 rounded hover:bg-pink-600 mt-3">
             Simpan
         </button>
     </form>
+
 
 </div>
 @endsection

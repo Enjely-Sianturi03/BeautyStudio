@@ -2,40 +2,57 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pelanggan;
+use App\Models\User;
+use App\Models\Transaksi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class PelangganController extends Controller
 {
-    public function index() {
-        $data = Pelanggan::latest()->paginate(10);
+    public function index() 
+    {
+        $data = User::orderBy('id','DESC')->paginate(10);
         return view('admin.pelanggan.index', compact('data'));
     }
 
-    public function store(Request $request) {
+    public function store(Request $request) 
+    {
         $val = $request->validate([
-            'nama'=>'required|string|max:100',
-            'telepon'=>'nullable|string|max:30',
-            'email'=>'nullable|email',
-            'alamat'=>'nullable|string'
+            'name'     => 'required|string|max:100',
+            'telepon'  => 'nullable|string|max:30',
+            'email'    => 'nullable|email|unique:users,email',
+            'password' => 'required|string|min:5',
+            'role'     => 'required|in:customer,pegawai'
         ]);
-        Pelanggan::create($val);
-        return back()->with('ok','Pelanggan ditambahkan');
+
+        User::create([
+            'name'     => $val['name'],
+            'telepon'  => $val['telepon'],
+            'email'    => $val['email'],
+            'password' => Hash::make($val['password']),
+            'role'     => $val['role'],
+        ]);
+
+        return back()->with('ok', 'Akun berhasil ditambahkan');
     }
 
-    public function update(Request $request, Pelanggan $pelanggan) {
+    public function update(Request $request, User $pelanggan) 
+    {
         $val = $request->validate([
-            'nama'=>'required|string|max:100',
-            'telepon'=>'nullable|string|max:30',
-            'email'=>'nullable|email',
-            'alamat'=>'nullable|string'
+            'name'     => 'required|string|max:100',
+            'telepon'  => 'nullable|string|max:30',
+            'email'    => 'nullable|email|unique:users,email,' . $pelanggan->id,
+            'role'     => 'required|in:customer,pegawai'
         ]);
+
         $pelanggan->update($val);
-        return back()->with('ok','Pelanggan diupdate');
+
+        return back()->with('ok', 'Akun berhasil diupdate');
     }
 
-    public function destroy(Pelanggan $pelanggan) {
+    public function destroy(User $pelanggan) 
+    {
         $pelanggan->delete();
-        return back()->with('ok','Pelanggan dihapus');
+        return back()->with('ok', 'Akun dihapus');
     }
 }

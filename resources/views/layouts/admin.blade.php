@@ -21,7 +21,7 @@
       </a>
       <a href="{{ route('admin.pelanggan.index') }}"
          class="block py-2 px-3 rounded hover:bg-pink-400 {{ request()->routeIs('admin.pelanggan.*') ? 'bg-pink-500' : '' }}">
-         Data Pelanggan
+         Manajemen User
       </a>
       <a href="{{ route('admin.layanan.index') }}"
          class="block py-2 px-3 rounded hover:bg-pink-400 {{ request()->routeIs('admin.layanan.*') ? 'bg-pink-500' : '' }}">
@@ -43,6 +43,11 @@
         class="block py-2 px-3 rounded hover:bg-pink-400 {{ request()->routeIs('admin.review.*') ? 'bg-pink-500' : '' }}">
         Review
       </a>
+      <a href="{{ route('admin.tipsartikel.index') }}"
+        class="block py-2 px-3 rounded hover:bg-pink-400 {{ request()->routeIs('admin.tips.*') ? 'bg-pink-500' : '' }}">
+        Tips & Artikel
+      </a>
+
 
     </nav>
 

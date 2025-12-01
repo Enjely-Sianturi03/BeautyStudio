@@ -54,7 +54,8 @@
                             <div class="mb-4">
                                 <label for="name" class="block text-gray-700 font-medium mb-2">Nama Anda</label>
                                 <input type="text" id="name" name="name" placeholder="Masukkan nama lengkap"
-                                    class="w-full p-3 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition shadow-sm">
+                                    class="w-full p-3 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition shadow-sm"
+                                    value="{{ auth()->check() ? auth()->user()->name : '' }}">
                             </div>
 
                             <div class="mb-4">
@@ -80,43 +81,6 @@
                         <button type="submit"
                             class="w-full bg-pink-600 hover:bg-pink-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-pink-300/50 transition transform hover:scale-[1.01]">
                             <i data-lucide="send" class="inline w-5 h-5 mr-2"></i> Kirim Ulasan Bahagia
-                        </button>
-                    </form>
-                </section>
-
-                <!-- SECTION 2 — Form Pesan Admin (2/3 Lebar, Lanjutan) -->
-                <section class="bg-white p-8 md:p-12 shadow-2xl rounded-3xl border border-pink-100 mb-12">
-                    <div class="flex items-center mb-8 border-b pb-4 border-gray-100">
-                        <i data-lucide="message-square" class="w-7 h-7 text-blue-500 mr-3"></i>
-                        <h2 class="text-3xl font-playfair font-bold text-pink-700">Pesan Pribadi ke Admin</h2>
-                    </div>
-
-                    <form action="{{ route('contact.send') }}" method="POST">
-                        @csrf
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="mb-4">
-                                <label for="contact_name" class="block text-gray-700 font-medium mb-2">Nama Lengkap</label>
-                                <input type="text" id="contact_name" name="name" placeholder="Nama Anda"
-                                    class="w-full p-3 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition shadow-sm">
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="email" class="block text-gray-700 font-medium mb-2">Email Aktif</label>
-                                <input type="email" id="email" name="email" placeholder="example@mail.com"
-                                    class="w-full p-3 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition shadow-sm">
-                            </div>
-                        </div>
-
-                        <div class="mb-6">
-                            <label for="message" class="block text-gray-700 font-medium mb-2">Isi Pesan Anda</label>
-                            <textarea id="message" name="message" rows="5" placeholder="Tuliskan pertanyaan atau saran Anda di sini..."
-                                class="w-full p-4 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition shadow-sm"></textarea>
-                        </div>
-
-                        <button type="submit"
-                            class="w-full bg-pink-600 hover:bg-pink-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-pink-300/50 transition transform hover:scale-[1.01]">
-                            <i data-lucide="mail" class="inline w-5 h-5 mr-2"></i> Kirim Pesan 
                         </button>
                     </form>
                 </section>

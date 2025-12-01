@@ -7,42 +7,33 @@ use Illuminate\Http\Request;
 
 class TipController extends Controller
 {
-    /**
-     * Menampilkan daftar Beauty Tips & Videos
-     */
     public function index(Request $request)
     {
-        // Daftar kategori
-        $categories = [
-            'all'       => 'Semua',
-            'skincare'  => 'Skincare',
-            'haircare'  => 'Haircare',
+        // Mapping slug URL ke nama kategori di database
+        $categoryMap = [
+            'skincare'  => 'Kesehatan Kulit',
+            'haircare'  => 'Perawatan Rambut',
             'makeup'    => 'Makeup',
             'treatment' => 'Body Treatment',
-            'video'     => 'Video Tutorial'
+            'all'       => 'all'
         ];
 
-        // Ambil kategori dari request, default 'all'
-        $category = $request->get('category', 'all');
+        // Ambil kategori dari request
+        $categorySlug = $request->get('category', 'all');
+        $categoryName = $categoryMap[$categorySlug] ?? null;
 
-        // Query tips berdasarkan kategori
-        $tips = Tip::when($category !== 'all', function ($query) use ($category) {
-                    $query->where('category', $category);
-                })
-                ->latest()
-                ->paginate(12);
+        // Query tips (article & video)
+        $tips = Tip::query()
+                    ->when($categoryName && $categoryName !== 'all', function($query) use ($categoryName) {
+                        $query->where('category', $categoryName);
+                    })
+                    ->latest()
+                    ->paginate(12)
+                    ->withQueryString();
 
-        // Kirim ke view tips.index
-        return view('tips.index', compact('tips', 'categories'));
-    }
-
-    /**
-     * Menampilkan detail tip berdasarkan ID
-     */
-    public function show($id)
-    {
-        $tip = Tip::findOrFail($id);
-
-        return view('tips.show', compact('tip'));
+        return view('tips.index', [
+            'tips' => $tips,
+            'currentCategory' => $categorySlug
+        ]);
     }
 }

@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transaksi extends Model
 {
+    protected $table = 'transaksi';
+
     protected $fillable = [
-        'pelanggan_id',
+        'user_id',      // ← ganti dari pelanggan_id menjadi user_id
         'jadwal_id',
         'total',
         'metode',
@@ -15,22 +17,25 @@ class Transaksi extends Model
         'dibayar_at'
     ];
 
-    public function pelanggan()
+    // Relasi ke User (pelanggan)
+    public function user()
     {
-        return $this->belongsTo(Pelanggan::class);
+        return $this->belongsTo(User::class, 'user_id'); 
     }
 
+    // Relasi ke Jadwal
     public function jadwal()
     {
         return $this->belongsTo(Jadwal::class);
     }
 
+    // Relasi item transaksi
     public function items()
     {
         return $this->hasMany(TransaksiItem::class);
     }
 
-    // hitung ulang total transaksi
+    // Hitung total
     public function refreshTotal()
     {
         $total = $this->items()->sum('subtotal');

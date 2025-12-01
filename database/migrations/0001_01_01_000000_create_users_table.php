@@ -29,10 +29,7 @@ return new class extends Migration
             // Perbaikan 3: Menambahkan 'profile_picture' (Sesuai Model User Anda)
             $table->string('profile_picture')->nullable();
             
-            // Perbaikan 4: Mengubah default role. Default 'customer' lebih umum untuk pendaftar biasa.
-            // Atau pertahankan 'pegawai' jika memang ini adalah aplikasi internal.
-            // Saya ubah menjadi 'customer' karena ini adalah Beauty Studio.
-            $table->string('role')->default('customer'); 
+            $table->enum('role', ['admin', 'owner', 'pegawai', 'customer']);
             
             $table->rememberToken();
             $table->timestamps();

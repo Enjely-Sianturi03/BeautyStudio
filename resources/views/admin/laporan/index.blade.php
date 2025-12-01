@@ -4,8 +4,7 @@
 
 @section('content')
 <form method="GET" class="bg-white shadow rounded p-6 mb-6 border-l-4 border-pink-400 grid grid-cols-1 md:grid-cols-5 gap-3">
-  
-  <input type="date" name="from" value="{{ $from?->format('Y-m-d') }}" class="p-2 border rounded">
+
   <input type="date" name="to" value="{{ $to?->format('Y-m-d') }}" class="p-2 border rounded">
 
   <button class="bg-pink-500 text-white rounded px-4">Terapkan</button>

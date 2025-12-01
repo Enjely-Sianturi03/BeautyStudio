@@ -3,41 +3,82 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-// You will likely need to import the Appointment model for the completeAppointment method
-// use App\Models\Appointment; 
+use App\Models\Appointment;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
 {
     /**
-     * Shows the main employee dashboard.
+     * Menampilkan dashboard pegawai (jadwal hari ini).
      */
-    public function index() 
+    public function index()
     {
-        return view('pegawai.dashboard');
+        // Ambil semua appointment hari ini untuk stylist yang login
+        $appointments = Appointment::with(['user', 'service'])
+            ->where('stylist_id', Auth::id())
+            ->whereDate('appointment_date', now()->toDateString())
+            ->orderBy('appointment_time')
+            ->get();
+
+        // Hitung statistik (pastikan status disimpan lowercase di DB)
+        $total = $appointments->count();
+        $completed = $appointments->where('status', 'completed')->count();
+        $pending = $appointments->where('status', 'pending')->count();
+
+        return view('pegawai.dashboard', compact('appointments', 'total', 'completed', 'pending'));
     }
 
-    // --- NEW METHOD FOR JADWAL (SCHEDULE) ---
     /**
-     * Shows the employee's schedule view.
+     * Menampilkan semua jadwal pegawai.
      */
-    public function schedule() 
+    public function schedule()
     {
-        // 1. Fetch data relevant to the employee's schedule (e.g., today's appointments)
-        // $schedules = Appointment::where('employee_id', auth()->id())->get();
-        
-        // 2. Return the corresponding view
-        return view('pegawai.jadwal');
-        // NOTE: You must have a Blade file named 'jadwal.blade.php' 
-        // inside the 'resources/views/pegawai/' directory.
+        $schedules = Appointment::where('stylist_id', Auth::id())
+            ->where('status', '!=', 'completed')     
+            ->orderBy('appointment_date', 'asc')
+            ->orderBy('appointment_time', 'asc')
+            ->get();
+
+        return view('pegawai.jadwal', compact('schedules'));
+    }
+    
+    public function history()
+    {
+        $history = Appointment::where('stylist_id', Auth::id())
+            ->where('status', 'completed')
+            ->orderBy('appointment_date', 'desc')
+            ->orderBy('appointment_time', 'desc')
+            ->get();
+
+        return view('pegawai.riwayat', compact('history'));
     }
 
-    public function history() 
-    {
-        return view('pegawai.riwayat');
-    }
-
+    /**
+     * Menandai appointment sebagai selesai.
+     */
     public function completeAppointment($id)
     {
-        return redirect()->route('pegawai.dashboard')->with('success', 'Appointment marked as completed (placeholder).');
+        $appointment = Appointment::where('stylist_id', Auth::id())
+            ->where('id', $id)
+            ->firstOrFail();
+
+        $appointment->status = 'completed';
+        $appointment->save();
+
+        return redirect()->back()->with('success', 'Layanan berhasil diselesaikan.');
+    }
+
+    /**
+     * Menampilkan daftar pelanggan
+     */
+    public function customers()
+    {
+        $customers = Appointment::where('stylist_id', Auth::id())
+            ->with('user')
+            ->get()
+            ->pluck('user')
+            ->unique('id');
+
+        return view('pegawai.customers', compact('customers'));
     }
 }

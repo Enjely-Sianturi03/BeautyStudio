@@ -1,56 +1,53 @@
 <?php
-// app/Models/Tip.php
 
-namespace App\Models; // Pastikan namespace sudah benar
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str; // PENTING: import kelas Str
+use Illuminate\Support\Str;
 
 class Tip extends Model
 {
     protected $fillable = [
         'title',
-        // 'slug' Dihapus dari fillable karena dibuat otomatis di boot()
-        'category',
-        'type',      // article / video
+        'slug',
+        'thumbnail',
         'content',
-        'thumbnail', // untuk artikel
-        'video_url', // untuk video
+        'video_url',
+        'type',
+        'category',
+        'is_featured',
+        'link',   // <-- TAMBAHKAN INI
     ];
 
     /**
-     * Metode boot() untuk membuat slug otomatis saat data dibuat (creating).
+     * Boot method untuk otomatis buat slug saat create/update
      */
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($tip) {
-            // Membuat slug dari title sebelum data disimpan
-            $tip->slug = Str::slug($tip->title); 
+            $tip->slug = Str::slug($tip->title);
+        });
+
+        static::updating(function ($tip) {
+            $tip->slug = Str::slug($tip->title);
         });
     }
-    
-    // =========================================================
-    // ACCESSORS (DARI KODE SEBELUMNYA)
-    // =========================================================
 
     /**
-     * Accessor: Ambil URL thumbnail, jika kosong pakai placeholder.
+     * Accessor: Ambil URL thumbnail
      */
     public function getThumbnailUrlAttribute()
     {
         if ($this->thumbnail) {
-            // Memastikan penggunaan asset() yang benar
             return asset('storage/' . $this->thumbnail);
         }
-
-        // Default image jika thumbnail kosong
         return asset('images/default-tips.jpg');
     }
 
     /**
-     * Accessor: Tampilkan tipe konten dalam format label.
+     * Accessor label tipe
      */
     public function getTypeLabelAttribute()
     {

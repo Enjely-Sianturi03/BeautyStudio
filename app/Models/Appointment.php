@@ -14,7 +14,7 @@ class Appointment extends Model
         'user_id',
         'name',
         'service_id',
-        'staff_id',
+        'stylist_id', 
         'appointment_date',
         'appointment_time',
         'status',
@@ -26,9 +26,12 @@ class Appointment extends Model
 
     protected $casts = [
         'appointment_date' => 'date',
-        'appointment_time' => 'datetime:H:i',
+        // keep appointment_time as time string (no need for datetime cast with format here),
+        // if you prefer Carbon instance, you can cast to 'datetime'
+        'appointment_time' => 'string',
     ];
 
+    // RELATIONS
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -39,14 +42,21 @@ class Appointment extends Model
         return $this->belongsTo(Service::class);
     }
 
-    // FIX — relasi staf
-    public function staff()
+    /**
+     * Stylist / staff yang menangani appointment.
+     * Pastikan stylist_id menunjuk ke tabel users (pegawai).
+     */
+    public function stylist()
     {
-        return $this->belongsTo(User::class, 'staff_id');
+        return $this->belongsTo(User::class, 'stylist_id');
     }
 
-    // === SCOPES ===
+    public function transaksi()
+    {
+        return $this->belongsTo(Transaksi::class, 'transaksi_id');
+    }
 
+    // SCOPES
     public function scopePending($q)
     {
         return $q->where('status', 'pending');
@@ -71,8 +81,7 @@ class Appointment extends Model
         });
     }
 
-    // === ACCESSORS ===
-
+    // ACCESSORS
     public function getFormattedDateAttribute()
     {
         return Carbon::parse($this->appointment_date)->format('d M Y');
@@ -85,26 +94,14 @@ class Appointment extends Model
 
     public function getFormattedDateTimeAttribute()
     {
-        return Carbon::parse($this->appointment_date)->format('d M Y') . 
-               ' - ' . 
+        return Carbon::parse($this->appointment_date)->format('d M Y') .
+               ' - ' .
                Carbon::parse($this->appointment_time)->format('H:i');
     }
 
     public function canBeCancelled(): bool
     {
         return in_array($this->status, ['pending', 'confirmed']) &&
-               $this->appointment_date->isFuture();
+               Carbon::parse($this->appointment_date)->isFuture();
     }
-
-    public function stylist()
-    {
-        return $this->belongsTo(Stylist::class, 'stylist_id');
-    }
-
-    public function transaksi()
-    {
-        return $this->hasOne(Transaksi::class);
-    }
-
-
 }

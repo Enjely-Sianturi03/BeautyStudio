@@ -153,4 +153,14 @@ class AppointmentController extends Controller
         return redirect()->route('appointments.index')
             ->with('success', 'Appointment cancelled successfully.');
     }
+
+    public function destroy($id)
+    {
+        $appointment = Appointment::findOrFail($id);
+        $appointment->delete();
+
+        return redirect()->route('admin.transaksi.index')
+            ->with('success', 'Transaksi / Appointment berhasil dihapus!');
+    }
+
 }

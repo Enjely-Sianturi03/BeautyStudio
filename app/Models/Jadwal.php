@@ -23,4 +23,10 @@ class Jadwal extends Model
     {
         return $this->belongsTo(Layanan::class);
     }
+
+    public function stylist()
+    {
+        return $this->belongsTo(User::class, 'stylist_id');
+    }
+
 }

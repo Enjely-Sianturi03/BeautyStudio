@@ -2,92 +2,85 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Transaksi, TransaksiItem, Pelanggan, Jadwal, Layanan};
+use App\Models\{
+    Transaksi,
+    TransaksiItem,
+    Jadwal,
+    Service
+};
+use App\Models\User;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class TransaksiController extends Controller
 {
-    /**
-     * Halaman Index Transaksi
-     */
     public function index()
     {
-        // Data transaksi + pelanggan (pagination)
-        $data = Transaksi::with('pelanggan')
+        $data = Transaksi::with('user')
             ->latest()
             ->paginate(10);
 
-        // Dropdown pelanggan
-        $pelanggans = Pelanggan::orderBy('nama')->get();
+        // Ambil user role customer
+        $users = User::where('role', 'customer')
+            ->orderBy('name')
+            ->get();
 
-        // Dropdown layanan
-        $layanans = Layanan::orderBy('nama')->get();
+        // Ambil layanan dari table services
+        $layanans = Service::orderBy('nama')->get();
 
-        // Data jadwal yang masih aktif
-        $jadwals = Jadwal::with(['pelanggan', 'layanan'])
+        // Jadwal
+        $jadwals = Jadwal::with(['user', 'service'])
             ->where('status', 'dijadwalkan')
             ->orderBy('mulai_at', 'DESC')
             ->get();
 
-        // FIX PAGINATION ERROR → gunakan paginate()
         $appointments = Appointment::with(['service', 'stylist', 'user'])
             ->orderBy('appointment_date', 'DESC')
-            ->paginate(10); // ← WAJIB jika ingin memakai links()
+            ->paginate(10);
 
         return view('admin.transaksi.index', compact(
-            'data',
-            'pelanggans',
-            'layanans',
-            'jadwals',
-            'appointments'
+            'data', 'users', 'layanans', 'jadwals', 'appointments'
         ));
     }
 
-
-    /**
-     * Simpan Transaksi
-     */
     public function store(Request $request)
     {
         $val = $request->validate([
-            'pelanggan_id'        => 'required|exists:pelanggans,id',
-            'jadwal_id'           => 'nullable|exists:jadwals,id',
-            'metode'              => 'required|in:cash,qris,transfer',
-            'items'               => 'required|array|min:1',
-            'items.*.layanan_id'  => 'required|exists:layanans,id',
-            'items.*.qty'         => 'required|integer|min:1'
+            'user_id'            => 'required|exists:users,id',
+            'jadwal_id'          => 'nullable|exists:jadwals,id',
+            'metode'             => 'required|in:cash,qris,transfer',
+
+            'items'              => 'required|array|min:1',
+            'items.*.layanan_id' => 'required|exists:services,id',
+            'items.*.qty'        => 'required|integer|min:1'
         ]);
 
         $transaksi = null;
 
         DB::transaction(function () use ($val, &$transaksi) {
 
-            // Buat transaksi utama
             $transaksi = Transaksi::create([
-                'pelanggan_id' => $val['pelanggan_id'],
-                'jadwal_id'    => $val['jadwal_id'] ?? null,
-                'total'        => 0,
-                'metode'       => $val['metode'],
-                'status'       => 'paid',
-                'dibayar_at'   => now(),
+                'user_id'    => $val['user_id'],
+                'jadwal_id'  => $val['jadwal_id'] ?? null,
+                'total'      => 0,
+                'metode'     => $val['metode'],
+                'status'     => 'paid',
+                'dibayar_at' => now(),
             ]);
 
-            // Simpan item layanan
             foreach ($val['items'] as $item) {
-                $layanan = Layanan::find($item['layanan_id']);
+                $layanan = Service::find($item['layanan_id']);
 
                 TransaksiItem::create([
-                    'transaksi_id'  => $transaksi->id,
-                    'layanan_id'    => $layanan->id,
-                    'qty'           => $item['qty'],
-                    'harga_satuan'  => $layanan->harga,
-                    'subtotal'      => $layanan->harga * $item['qty']
+                    'transaksi_id' => $transaksi->id,
+                    'service_id'   => $layanan->id,
+                    'qty'          => $item['qty'],
+                    'harga_satuan' => $layanan->harga,
+                    'subtotal'     => $layanan->harga * $item['qty']
                 ]);
             }
 
-            // Update total final
             $transaksi->refreshTotal();
         });
 
@@ -96,43 +89,85 @@ class TransaksiController extends Controller
 
     public function show($id)
     {
-        $transaksi = Appointment::with(['user', 'service'])->findOrFail($id);
+        $appointment = Appointment::with(['user','service'])->findOrFail($id);
 
-        return view('admin.transaksi.show', compact('transaksi'));
-    }
-
-    public function confirm($id)
-    {
-        $t = Appointment::findOrFail($id);
-        $t->status = 'confirmed';
-        $t->save();
-
-        return back()->with('ok', 'Transaksi berhasil dikonfirmasi!');
-    }
-
-    public function cancel($id)
-    {
-        $t = Appointment::findOrFail($id);
-        $t->status = 'cancelled';
-        $t->save();
-
-        return back()->with('ok', 'Transaksi berhasil dibatalkan!');
+        return view('admin.transaksi.show', [
+            'transaksi' => $appointment
+        ]);
     }
 
     public function updateStatus(Request $request, $id)
     {
-        $request->validate([
-            'status' => 'required|in:confirmed,cancelled'
-        ]);
+        $request->validate(['status' => 'required|in:confirmed,cancelled']);
 
-        $transaksi = Appointment::findOrFail($id);
-
-        $transaksi->status = $request->status;
-        $transaksi->save();
+        $transaksi = Transaksi::findOrFail($id);
+        $transaksi->update(['status' => $request->status]);
 
         return redirect()
             ->route('admin.transaksi.show', $id)
-            ->with('ok', 'Status transaksi berhasil diubah menjadi ' . strtoupper($request->status));
+            ->with('ok', 'Status transaksi berhasil diubah!');
     }
+
+    public function storeManual(Request $request)
+    {
+        $request->validate([
+            'user_id'          => 'required|exists:users,id',
+            'service_id'       => 'required|exists:services,id',
+            'appointment_date' => 'required|date',
+            'appointment_time' => 'required',
+            'payment_method'   => 'required|string',
+        ]);
+
+        // Ambil user
+        $user = User::find($request->user_id);
+
+        // Ambil service
+        $service = Service::findOrFail($request->service_id);
+
+        // SIMPAN APPOINTMENT SEBAGAI TRANSAKSI
+        $appointment = Appointment::create([
+            'user_id'          => $user->id,
+            'name'             => $user->name,
+            'service_id'       => $service->id,
+            'stylist_id'       => null,
+            'appointment_date' => $request->appointment_date,
+            'appointment_time' => $request->appointment_time,
+            'payment_method'   => $request->payment_method,
+            'status'           => 'completed',
+            'notes'            => null,
+            'admin_notes'      => null,
+            'payment_proof'    => null,
+        ]);
+
+        return redirect()->back()->with('ok', 'Transaksi manual berhasil ditambahkan sebagai appointment!');
+    }
+    public function confirm($id)
+    {
+        $appointment = Appointment::findOrFail($id);
+
+        // Ubah status appointment menjadi confirmed
+        $appointment->update([
+            'status' => 'confirmed'
+        ]);
+
+        return redirect()
+            ->route('admin.transaksi.show', $id)
+            ->with('success', 'Transaksi / Appointment berhasil dikonfirmasi!');
+    }
+
+    public function cancel($id)
+    {
+        $appointment = Appointment::findOrFail($id);
+
+        // Ubah status appointment menjadi cancelled
+        $appointment->update([
+            'status' => 'cancelled'
+        ]);
+
+        return redirect()
+            ->route('admin.transaksi.show', $id)
+            ->with('success', 'Transaksi / Appointment berhasil dibatalkan!');
+    }
+
 
 }

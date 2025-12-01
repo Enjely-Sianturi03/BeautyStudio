@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User; // Digunakan sebagai Model Pelanggan (role='customer')
+use App\Models\User; 
 use App\Models\Service;
-use App\Models\Transaction; // Digunakan untuk menghapus transaksi terkait jika ada
-use App\Models\Jadwal; // Asumsi Model Jadwal ada untuk statistik jadwal
+use App\Models\Transaksi;
+use App\Models\Transaction;
+use App\Models\Jadwal; 
 
 class AdminController extends Controller
 {
@@ -55,9 +56,10 @@ class AdminController extends Controller
     public function pelangganIndex()
     {
         // Ambil data pelanggan (role 'customer') dengan 10 item per halaman
-        $data = User::where('role', 'customer')
-                    ->orderBy('created_at', 'desc')
-                    ->paginate(10);
+        $data = User::whereIn('role', ['customer', 'pegawai'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
         
         return view('admin.pelanggan.index', compact('data'));
     }
@@ -83,7 +85,7 @@ class AdminController extends Controller
             'telepon' => $request->telepon,
             'alamat' => $request->alamat,
             'password' => Hash::make($request->password),
-            'role' => 'customer', // Pastikan role diset sebagai customer
+            'role' => $request->role,
         ]);
 
         return redirect()->route('admin.pelanggan.index')
@@ -118,7 +120,7 @@ class AdminController extends Controller
     public function pelangganDestroy(User $pelanggan)
     {
         // Hapus semua transaksi terkait pelanggan ini
-        Transaction::where('customer_id', $pelanggan->id)->delete();
+        Transaksi::where('customer_id', $pelanggan->id)->delete();
         
         $pelanggan->delete();
 
@@ -172,5 +174,13 @@ class AdminController extends Controller
 
         return redirect()->route('admin.layanan.index')
                          ->with('success', 'Layanan berhasil dihapus.');
+    }
+
+    public function jadwalIndex()
+    {
+        $appointments = Appointment::with(['user', 'service', 'stylist'])->get(); // eager load
+        $staff = User::where('role', 'pegawai')->get(); // ambil semua pegawai/staf
+
+        return view('admin.jadwal.index', compact('appointments', 'staff'));
     }
 }
