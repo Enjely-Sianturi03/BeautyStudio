@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class JadwalController extends Controller
 {
@@ -18,7 +19,6 @@ class JadwalController extends Controller
             ->orderBy('appointment_time', 'asc')
             ->get();
 
-        // Ambil semua staf / pegawai (role 'pegawai')
         $staff = User::where('role', 'pegawai')->get();
 
         return view('admin.jadwal.index', compact('appointments','staff'));
@@ -37,32 +37,41 @@ class JadwalController extends Controller
         return view('admin.jadwal.show', compact('appointment', 'staff'));
     }
 
-    /**
-     * Update appointment (menetapkan staf/stylist).
-     */
     public function update(Request $request, $id)
     {
         $request->validate([
             'stylist_id' => 'nullable|exists:users,id',
         ]);
 
-        $appointment = Appointment::findOrFail($id);
+        $appointment = Appointment::with('service')->findOrFail($id);
+        $selectedStylistId = $request->input('stylist_id');
 
-        // Ambil stylist id dari input
-        $stylistId = $request->input('stylist_id');
-        $appointment->stylist_id = $stylistId;
-        $appointment->save();
+        if ($selectedStylistId) {
+            $startTime = Carbon::parse($appointment->appointment_time);
+            $endTime   = $startTime->copy()->addMinutes($appointment->service->durasi_menit);
 
-        // --- OPTIONAL: Buat notifikasi untuk stylist (lihat B untuk 2 metode) ---
-        if ($stylistId) {
-            // Metode A (direkomendasikan): Laravel Notification
-            // Metode B (fallback): insert ke tabel notification_logs
+            // Ambil jumlah staf yang ada
+            $totalStaff = User::where('role', 'pegawai')->count();
+
+            $conflictCount = Appointment::where('id', '!=', $appointment->id)
+                ->where('appointment_date', $appointment->appointment_date)
+                ->where('stylist_id', $selectedStylistId) // ✅ Hanya cek staf yang dipilih
+                ->whereHas('service', function($q) use ($startTime, $endTime) {
+                    $q->whereRaw("ADDTIME(appointment_time, SEC_TO_TIME(durasi_menit*60)) > ?", [$startTime->format('H:i')])
+                    ->where('appointment_time', '<', $endTime->format('H:i'));
+                })
+                ->count();
+
+            if ($conflictCount >= 1) { 
+                return back()->withErrors(['error' => 'Staf ini sudah memiliki appointment pada waktu ini.']);
+            }
+
+            $appointment->stylist_id = $selectedStylistId;
+            $appointment->save();
         }
 
-        // Tetap kembali ke halaman admin, tampilkan pesan sukses yang jelas
-        return back()->with('success', 'Staf berhasil diperbarui! Stylist akan melihat jadwal ketika mereka login.');
+        return back()->with('success', 'Staf berhasil diperbarui!');
     }
-
 
     /**
      * Hapus appointment.

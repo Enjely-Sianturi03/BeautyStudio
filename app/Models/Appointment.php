@@ -17,6 +17,7 @@ class Appointment extends Model
         'stylist_id', 
         'appointment_date',
         'appointment_time',
+        'end_time',
         'status',
         'notes',
         'admin_notes',
@@ -104,4 +105,19 @@ class Appointment extends Model
         return in_array($this->status, ['pending', 'confirmed']) &&
                Carbon::parse($this->appointment_date)->isFuture();
     }
+
+    public function getEndTimeAttribute($value)
+    {
+        if($value) return $value;
+
+        if($this->service && $this->appointment_time) {
+            return \Carbon\Carbon::parse($this->appointment_time)
+                ->addMinutes($this->service->durasi_menit)
+                ->format('H:i');
+        }
+
+        return null;
+    }
+
+
 }

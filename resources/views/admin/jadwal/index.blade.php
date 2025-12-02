@@ -6,14 +6,24 @@
 
 <div class="bg-white shadow rounded p-6 mb-6 border-l-4 border-pink-400">
     <h2 class="text-2xl font-bold mb-4 text-pink-600">Jadwal Layanan Masuk</h2>
-
+    @if ($errors->has('error'))
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+            {{ $errors->first('error') }}
+        </div>
+    @endif
+    @if(session('success'))
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
     <table class="w-full border-collapse rounded overflow-hidden">
         <thead class="bg-pink-200">
             <tr>
                 <th class="py-3 px-4 text-left font-semibold text-gray-700">Pelanggan</th>
                 <th class="py-3 px-4 text-left font-semibold text-gray-700">Layanan</th>
                 <th class="py-3 px-4 text-left font-semibold text-gray-700">Tanggal</th>
-                <th class="py-3 px-4 text-left font-semibold text-gray-700">Jam</th>
+                <th class="py-3 px-4 text-left font-semibold text-gray-700">Jam Mulai</th>
+                <th class="py-3 px-4 text-left font-semibold text-gray-700">Jam Selesai</th>
                 <th class="py-3 px-4 text-left font-semibold text-gray-700">Status</th>
                 <th class="py-3 px-4 text-left font-semibold text-gray-700">Staf</th>
                 <th class="py-3 px-4 text-center font-semibold text-gray-700">Aksi</th>
@@ -41,6 +51,10 @@
                 </td>
 
                 <td class="py-3 px-4">
+                    {{ $a->end_time }}
+                </td>
+
+                <td class="py-3 px-4">
                     @if($a->status === 'pending')
                         <span class="px-3 py-1 text-xs bg-yellow-200 text-yellow-700 rounded-full">Pending</span>
                     @elseif($a->status === 'confirmed')
@@ -53,34 +67,31 @@
                 </td>
 
                 <td class="py-3 px-4">
-                    <form action="{{ route('admin.jadwal.update', $a->id) }}" method="POST" class="flex items-center gap-2">
-                        @csrf
-                        @method('PUT')
+                <form action="{{ route('admin.jadwal.update', $a->id) }}" method="POST" class="flex items-center gap-2">
+                    @csrf
+                    @method('PUT')
 
-                        <select name="stylist_id" class="border rounded p-2 w-full">
-                            <option value="">Pilih Staf</option>
-                            @foreach($staff as $s)
-                                <option value="{{ $s->id }}" {{ $a->stylist_id == $s->id ? 'selected' : '' }}>
-                                    {{ $s->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                    <select name="stylist_id" class="border rounded p-2 w-full">
+                        <option value="">Pilih Staf</option>
+                        @foreach($staff as $s)
+                            <option value="{{ $s->id }}" {{ $a->stylist_id == $s->id ? 'selected' : '' }}>
+                                {{ $s->name }}
+                            </option>
+                        @endforeach
+                    </select>
 
-                        <button class="bg-pink-500 text-white px-3 py-1 rounded hover:bg-pink-600 transition">
-                            Simpan
-                        </button>
-                    </form>
+                    <button class="bg-pink-500 text-white px-3 py-1 rounded hover:bg-pink-600 transition">
+                        Simpan
+                    </button>
 
+                    @error('stylist_id')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </form>
                 </td>
 
                 <td class="py-3 px-4 text-center">
                     <div class="flex items-center justify-center gap-3">
-
-                        {{-- Tombol Detail --}}
-                        <a href="{{ route('admin.jadwal.show', $a->id) }}" 
-                           class="text-blue-600 hover:underline">
-                           Detail
-                        </a>
 
                         {{-- Tombol Hapus --}}
                         <form action="{{ route('admin.jadwal.destroy', $a->id) }}"

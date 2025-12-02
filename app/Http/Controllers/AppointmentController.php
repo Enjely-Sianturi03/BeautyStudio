@@ -73,53 +73,43 @@ class AppointmentController extends Controller
     /**
      * Store a newly created appointment WITH PAYMENT.
      */
- public function store(Request $request)
-{
-    $validated = $request->validate([
-        'name' => 'required|string|max:255', // ✅ Tambah nama
+    public function store(Request $request)
+    {
+        $request->validate([
+        'name' => 'required|string|max:255',
         'service_id' => 'required|exists:services,id',
-        'stylist_id' => 'nullable|exists:stylists,id',
-        'appointment_date' => 'required|date|after:today',
+        'appointment_date' => 'required|date',
         'appointment_time' => 'required',
-        'notes' => 'nullable|string|max:500',
-
         'payment_method' => 'required|string',
-        'payment_proof' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        'payment_proof' => $request->payment_method !== 'Cash' ? 'required|image|max:2048' : 'nullable|image|max:2048',
     ]);
 
-    // Jika tidak pakai stylist
-    $validated['stylist_id'] = $request->stylist_id ?? null;
+    // Hitung jumlah booking di slot itu
+    $count = Appointment::where('appointment_date', $request->appointment_date)
+                        ->where('appointment_time', $request->appointment_time)
+                        ->count();
 
-    // Cek jadwal bentrok
-    $existingAppointment = Appointment::where('appointment_date', $validated['appointment_date'])
-        ->where('appointment_time', $validated['appointment_time'])
-        ->whereIn('status', ['pending', 'confirmed'])
-        ->exists();
-
-    if ($existingAppointment) {
-        return back()->withErrors([
-            'appointment_time' => 'This time slot is already booked.'
-        ])->withInput();
+    if ($count >= 3) {
+        return back()->withInput()->withErrors(['appointment_time' => 'This time slot is already full (3 bookings max).']);
     }
 
-    // Upload bukti
-    $proofPath = $request->file('payment_proof')->store('payment_proofs', 'public');
-    $validated['payment_proof'] = $proofPath;
+    // Simpan appointment
+    $appointment = new Appointment();
+    $appointment->user_id = auth()->id();
+    $appointment->name = $request->name;
+    $appointment->service_id = $request->service_id;
+    $appointment->appointment_date = $request->appointment_date;
+    $appointment->appointment_time = $request->appointment_time;
+    $appointment->payment_method = $request->payment_method;
 
-    // Tambahkan user ID & status
-    $validated['user_id'] = Auth::id();
-    $validated['status'] = 'pending';
+    if ($request->hasFile('payment_proof')) {
+        $appointment->payment_proof = $request->file('payment_proof')->store('payment_proofs', 'public');
+    }
 
-    // ✅ Tambahkan name ke database
-    $validated['name'] = $request->name;
+    $appointment->save();
 
-    // Simpan
-    $appointment = Appointment::create($validated);
-
-    return redirect()->route('appointments.show', $appointment)
-        ->with('success', 'Appointment booked successfully!');
-}
-
+    return redirect()->route('appointments.index')->with('success', 'Appointment successfully booked!');
+    }
 
     /**
      * Display the specified appointment.
