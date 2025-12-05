@@ -32,27 +32,32 @@
     </thead>
 
     <tbody>
-      @foreach($data as $t)
+      @foreach($data as $appointment)
+      @php
+          // Ambil transaksi terkait appointment
+          $transaksi = \App\Models\Transaksi::where('user_id', $appointment->user_id)
+                        ->where('service_id', $appointment->service_id)
+                        ->where('date', $appointment->appointment_jadwal) 
+                        ->first();
+      @endphp
       <tr class="border-b hover:bg-pink-50">
 
         {{-- tanggal appointment --}}
         <td class="py-2 px-3">
-          {{ \Carbon\Carbon::parse($t->appointment_date)->format('Y-m-d') }}
+          {{ \Carbon\Carbon::parse($appointment->appointment_jadwal)->format('Y-m-d') }}
         </td>
 
         {{-- pelanggan dari relasi user --}}
         <td class="py-2 px-3">
-          {{ $t->user->name ?? '-' }}
+          {{ $appointment->user->name ?? '-' }}
         </td>
 
-        {{-- metode pembayaran --}}
         <td class="py-2 px-3 uppercase">
-          {{ $t->payment_method ?? '-' }}
+            {{ $appointment->payment_method ? strtoupper($appointment->payment_method) : '-' }}
         </td>
-
         {{-- total bayar --}}
         <td class="py-2 px-3 text-right">
-          Rp {{ number_format($t->service->harga ?? 0,0,',','.') }}
+          Rp {{ number_format($appointment->service->harga ?? 0,0,',','.') }}
         </td>
 
       </tr>

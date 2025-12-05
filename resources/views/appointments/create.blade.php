@@ -36,29 +36,13 @@
             @else
 
             @php
-                // support both variable names that controller might send
                 $selected = $selectedService ?? $service ?? null;
-                // available time slots (half-hour increments sample)
                 $times = [
-                    '09:00' => '9:00 AM',
-                    '09:30' => '9:30 AM',
-                    '10:00' => '10:00 AM',
-                    '10:30' => '10:30 AM',
-                    '11:00' => '11:00 AM',
-                    '11:30' => '11:30 AM',
-                    '12:00' => '12:00 PM',
-                    '12:30' => '12:30 PM',
-                    '13:00' => '1:00 PM',
-                    '13:30' => '1:30 PM',
-                    '14:00' => '2:00 PM',
-                    '14:30' => '2:30 PM',
-                    '15:00' => '3:00 PM',
-                    '15:30' => '3:30 PM',
-                    '16:00' => '4:00 PM',
-                    '16:30' => '4:30 PM',
-                    '17:00' => '5:00 PM',
-                    '17:30' => '5:30 PM',
-                    '18:00' => '6:00 PM',
+                    '09:00' => '9:00 AM', '09:30' => '9:30 AM', '10:00' => '10:00 AM', '10:30' => '10:30 AM',
+                    '11:00' => '11:00 AM', '11:30' => '11:30 AM', '12:00' => '12:00 PM', '12:30' => '12:30 PM',
+                    '13:00' => '1:00 PM', '13:30' => '1:30 PM', '14:00' => '2:00 PM', '14:30' => '2:30 PM',
+                    '15:00' => '3:00 PM', '15:30' => '3:30 PM', '16:00' => '4:00 PM', '16:30' => '4:30 PM',
+                    '17:00' => '5:00 PM', '17:30' => '5:30 PM', '18:00' => '6:00 PM'
                 ];
                 $minDate = date('Y-m-d', strtotime('+1 day'));
             @endphp
@@ -72,24 +56,6 @@
                 @csrf
 
                 <!-- Service Selection -->
-                 <!-- Customer Name -->
-<div class="mb-6">
-    <label class="block text-lg font-medium text-gray-700 mb-2">
-        Masukkan Nama <span class="text-red-500">*</span>
-    </label>
-    <input 
-        type="text" 
-        name="name" 
-        value="{{ old('name', Auth::user()->name ?? '') }}"
-        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent @error('name') border-red-500 @enderror"
-        placeholder="Masukkan nama kamu"
-        required
-    >
-    @error('name')
-        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-    @enderror
-</div>
-
                 <div class="mb-6">
                     <label for="service_id" class="block text-lg font-medium text-gray-700 mb-2">
                         Select Service <span class="text-red-500">*</span>
@@ -110,7 +76,7 @@
                                 <option value="{{ $srv->id }}"
                                         data-price="{{ $srv->price }}"
                                         data-duration="{{ $srv->duration }}"
-                                        {{ (old('service_id') && old('service_id') == $srv->id) ? 'selected' : '' }}>
+                                        {{ old('service_id') == $srv->id ? 'selected' : '' }}>
                                     {{ $srv->name }} - ${{ number_format($srv->price, 2) }}
                                 </option>
                             @endforeach
@@ -138,38 +104,38 @@
 
                 <!-- Date Selection -->
                 <div class="mb-6">
-                    <label for="appointment_date" class="block text-lg font-medium text-gray-700 mb-2">
+                    <label for="jadwal" class="block text-lg font-medium text-gray-700 mb-2">
                         Select Date <span class="text-red-500">*</span>
                     </label>
                     <input type="date" 
-                           name="appointment_date" 
+                           name="jadwal" 
                            id="appointment_date" 
                            min="{{ $minDate }}"
-                           value="{{ old('appointment_date') }}"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent @error('appointment_date') border-red-500 @enderror"
+                           value="{{ old('jadwal') }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent @error('jadwal') border-red-500 @enderror"
                            required>
-                    @error('appointment_date')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @error('jadwal')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <!-- Time Selection (preset slots) -->
+                <!-- Time Selection -->
                 <div class="mb-6">
-                    <label for="appointment_time" class="block text-lg font-medium text-gray-700 mb-2">
+                    <label for="jam_mulai" class="block text-lg font-medium text-gray-700 mb-2">
                         Select Time <span class="text-red-500">*</span>
                     </label>
-                    <select name="appointment_time" id="appointment_time"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent @error('appointment_time') border-red-500 @enderror"
+                    <select name="jam_mulai" id="appointment_time"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent @error('jam_mulai') border-red-500 @enderror"
                             required>
                         <option value="">-- Choose a time --</option>
                         @foreach($times as $value => $label)
-                            <option value="{{ $value }}" {{ old('appointment_time') == $value ? 'selected' : '' }}>
+                            <option value="{{ $value }}" {{ old('jam_mulai') == $value ? 'selected' : '' }}>
                                 {{ $label }}
                             </option>
                         @endforeach
                     </select>
-                    @error('appointment_time')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @error('jam_mulai')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -183,6 +149,7 @@
                         <option value="OVO" {{ old('payment_method') == 'OVO' ? 'selected' : '' }}>OVO</option>
                         <option value="ShopeePay" {{ old('payment_method') == 'ShopeePay' ? 'selected' : '' }}>ShopeePay</option>
                         <option value="GOPAY" {{ old('payment_method') == 'GOPAY' ? 'selected' : '' }}>GOPAY</option>
+                        <option value="Cash" {{ old('payment_method') == 'Cash' ? 'selected' : '' }}>Cash</option>
                     </select>
                     @error('payment_method')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -191,12 +158,11 @@
 
                 <!-- Upload Payment Proof -->
                 <div class="mb-6">
-                    <label class="block font-semibold mb-2">Upload Payment Proof @if(old('payment_method') && old('payment_method') != 'Cash') <span class="text-red-500">*</span> @endif</label>
+                    <label class="block font-semibold mb-2">Upload Payment Proof</label>
                     <input type="file" 
                            name="payment_proof" 
                            accept="image/*"
-                           class="w-full border rounded-lg px-3 py-2 @error('payment_proof') border-red-500 @enderror"
-                           {{ old('payment_method') && old('payment_method') == 'Cash' ? '' : 'required' }}>
+                           class="w-full border rounded-lg px-3 py-2 @error('payment_proof') border-red-500 @enderror">
                     <p class="text-xs text-gray-500 mt-1">Upload JPG/PNG. Max 2MB. If you choose Cash, upload optional.</p>
                     @error('payment_proof')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -214,7 +180,7 @@
                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent @error('notes') border-red-500 @enderror"
                               placeholder="Any special requests or notes for your stylist...">{{ old('notes') }}</textarea>
                     @error('notes')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                     <p class="text-sm text-gray-500 mt-1">Maximum 500 characters</p>
                 </div>
@@ -238,58 +204,36 @@
 
 @push('scripts')
 <script>
-    // Show service info when selected (works for select OR hidden input prefilled)
     function showServiceInfo(el) {
-        const option = (el.tagName && el.tagName.toLowerCase() === 'select')
-            ? el.options[el.selectedIndex]
-            : el; // if it's hidden input element
-
+        const option = el.tagName.toLowerCase() === 'select' ? el.options[el.selectedIndex] : el;
         const price = option.getAttribute('data-price') || '';
         const duration = option.getAttribute('data-duration') || '';
-
         const serviceInfo = document.getElementById('service-info');
-        if (price && duration) {
+        if(price && duration) {
             document.getElementById('service-price').textContent = '$' + parseFloat(price).toFixed(2);
             document.getElementById('service-duration').textContent = duration + ' min';
             serviceInfo.classList.remove('hidden');
-        } else {
-            serviceInfo.classList.add('hidden');
-        }
+        } else serviceInfo.classList.add('hidden');
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         const serviceSelect = document.getElementById('service_id');
-
-        if (serviceSelect) {
-            // if it's a select element
-            if (serviceSelect.tagName.toLowerCase() === 'select') {
-                serviceSelect.addEventListener('change', function() {
-                    showServiceInfo(this);
-                });
-
-                // on load, if old selected or preselected
-                if (serviceSelect.value) {
-                    showServiceInfo(serviceSelect);
-                }
-            } else {
-                // could be hidden input (prefilled selected service)
-                showServiceInfo(serviceSelect);
-            }
+        if(serviceSelect) {
+            if(serviceSelect.tagName.toLowerCase() === 'select') {
+                serviceSelect.addEventListener('change', function(){ showServiceInfo(this); });
+                if(serviceSelect.value) showServiceInfo(serviceSelect);
+            } else showServiceInfo(serviceSelect);
         }
 
-        // if payment method is Cash, make proof optional in UI (note: server-side must also accept)
         const paymentMethod = document.querySelector('select[name="payment_method"]');
         const paymentProof = document.querySelector('input[name="payment_proof"]');
-        if (paymentMethod && paymentProof) {
-            function toggleProofRequirement() {
-                if (paymentMethod.value === 'Cash') {
-                    paymentProof.removeAttribute('required');
-                } else {
-                    paymentProof.setAttribute('required', 'required');
-                }
+        if(paymentMethod && paymentProof){
+            function toggleProofRequirement(){
+                if(paymentMethod.value === 'Cash') paymentProof.removeAttribute('required');
+                else paymentProof.setAttribute('required','required');
             }
             paymentMethod.addEventListener('change', toggleProofRequirement);
-            toggleProofRequirement(); // initial
+            toggleProofRequirement();
         }
     });
 </script>

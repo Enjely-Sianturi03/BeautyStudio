@@ -45,15 +45,8 @@
                 <td class="py-3 px-4">
                     {{ \Carbon\Carbon::parse($a->appointment_date)->translatedFormat('d F Y') }}
                 </td>
-
-                <td class="py-3 px-4">
-                    {{ \Carbon\Carbon::parse($a->appointment_time)->format('H:i') }}
-                </td>
-
-                <td class="py-3 px-4">
-                    {{ $a->end_time }}
-                </td>
-
+                <td>{{ \Carbon\Carbon::parse($a->jam_mulai)->format('H:i') }}</td>
+                <td>{{ $a->jam_selesai }}</td>
                 <td class="py-3 px-4">
                     @if($a->status === 'pending')
                         <span class="px-3 py-1 text-xs bg-yellow-200 text-yellow-700 rounded-full">Pending</span>

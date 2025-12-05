@@ -17,10 +17,6 @@ class TransaksiController extends Controller
 {
     public function index()
     {
-        $data = Transaksi::with('user')
-            ->latest()
-            ->paginate(10);
-
         // Ambil user role customer
         $users = User::where('role', 'customer')
             ->orderBy('name')
@@ -29,18 +25,24 @@ class TransaksiController extends Controller
         // Ambil layanan dari table services
         $layanans = Service::orderBy('nama')->get();
 
-        // Jadwal
+        // Jadwal (jika masih dibutuhkan)
         $jadwals = Jadwal::with(['user', 'service'])
             ->where('status', 'dijadwalkan')
             ->orderBy('mulai_at', 'DESC')
             ->get();
 
-        $appointments = Appointment::with(['service', 'stylist', 'user'])
-            ->orderBy('appointment_date', 'DESC')
+        // Ambil appointments
+        $appointments = Appointment::with(['service','stylist','user'])
+            ->orderBy('id','DESC')
             ->paginate(10);
 
+        // Ambil semua transaksi
+        $transaksi = Transaksi::all()->keyBy(function($t){
+            return $t->user_id.'_'.$t->service_id; // key unik: user + service
+        });
+
         return view('admin.transaksi.index', compact(
-            'data', 'users', 'layanans', 'jadwals', 'appointments'
+            'appointments', 'users', 'layanans', 'jadwals', 'transaksi'
         ));
     }
 
@@ -87,14 +89,21 @@ class TransaksiController extends Controller
         return back()->with('ok', 'Transaksi berhasil disimpan!');
     }
 
-    public function show($id)
-    {
-        $appointment = Appointment::with(['user','service'])->findOrFail($id);
+public function show($id)
+{
+    $appointment = Appointment::with(['user', 'service'])->findOrFail($id);
 
-        return view('admin.transaksi.show', [
-            'transaksi' => $appointment
-        ]);
-    }
+    // Ambil transaksi terbaru dari user + service yang sama
+    $transaksi = Transaksi::where('user_id', $appointment->user_id)
+        ->where('service_id', $appointment->service_id)
+        ->latest('id')
+        ->first();
+
+    return view('admin.transaksi.show', [
+        'appointment' => $appointment,
+        'transaksi'   => $transaksi
+    ]);
+}
 
     public function updateStatus(Request $request, $id)
     {
@@ -113,7 +122,7 @@ class TransaksiController extends Controller
         $request->validate([
             'user_id'          => 'required|exists:users,id',
             'service_id'       => 'required|exists:services,id',
-            'appointment_date' => 'required|date',
+            'jadwal' => 'required|date',
             'appointment_time' => 'required',
             'payment_method'   => 'required|string',
         ]);

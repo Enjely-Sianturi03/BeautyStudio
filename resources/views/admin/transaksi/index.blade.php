@@ -72,10 +72,15 @@
 
         <tbody>
             @foreach($appointments as $a)
+                @php
+                    // Cari transaksi berdasarkan user + service
+                    $key = $a->user_id.'_'.$a->service_id;
+                    $trx = $transaksi[$key] ?? null;
+                @endphp
             <tr class="border-b hover:bg-pink-50">
 
                 <td class="py-2 px-3">
-                    {{ \Carbon\Carbon::parse($a->appointment_date)->format('d/m/Y') }}
+                    {{ $trx ? \Carbon\Carbon::parse($trx->date)->format('d/m/Y') : '-' }}
                 </td>
 
                 <td class="py-2 px-3">
@@ -83,9 +88,9 @@
                 </td>
 
                 <td class="py-2 px-3 uppercase">
-                    {{ $a->payment_method ?? '-' }}
+                    {{ $trx ? strtoupper($trx->payment_method) : '-' }}
                 </td>
-
+                
                 <td class="py-2 px-3">
                     @php
                         $status = [

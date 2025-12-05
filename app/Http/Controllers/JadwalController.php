@@ -12,17 +12,28 @@ class JadwalController extends Controller
     /**
      * Menampilkan semua jadwal appointment.
      */
-    public function index()
-    {
-        $appointments = Appointment::with(['user','service','stylist'])
-            ->orderBy('appointment_date', 'asc')
-            ->orderBy('appointment_time', 'asc')
-            ->get();
+public function index()
+{
+    $appointments = Appointment::with(['user','service','stylist'])
+        ->whereIn('status', ['confirmed', 'completed']) // hanya ambil yang dikonfirmasi dan selesai
+        ->orderBy('jadwal')
+        ->orderBy('jam_mulai')
+        ->get()
+        ->map(function($appointment) {
+            if ($appointment->service && $appointment->jam_mulai) {
+                $appointment->jam_selesai = \Carbon\Carbon::parse($appointment->jam_mulai)
+                    ->addMinutes($appointment->service->durasi_menit)
+                    ->format('H:i'); 
+            } else {
+                $appointment->jam_selesai = null;
+            }
+            return $appointment;
+        });
 
-        $staff = User::where('role', 'pegawai')->get();
+    $staff = User::where('role', 'pegawai')->get();
 
-        return view('admin.jadwal.index', compact('appointments','staff'));
-    }
+    return view('admin.jadwal.index', compact('appointments','staff'));
+}
 
     /**
      * Menampilkan detail appointment.
@@ -47,25 +58,27 @@ class JadwalController extends Controller
         $selectedStylistId = $request->input('stylist_id');
 
         if ($selectedStylistId) {
-            $startTime = Carbon::parse($appointment->appointment_time);
+            $startTime = Carbon::parse($appointment->jam_mulai);
             $endTime   = $startTime->copy()->addMinutes($appointment->service->durasi_menit);
 
-            // Ambil jumlah staf yang ada
-            $totalStaff = User::where('role', 'pegawai')->count();
+            // Ambil semua appointment staf yang sama di tanggal itu, kecuali appointment ini
+            $staffAppointments = Appointment::with('service')
+                ->where('jadwal', $appointment->jadwal)
+                ->where('stylist_id', $selectedStylistId)
+                ->where('id', '!=', $appointment->id)
+                ->get();
 
-            $conflictCount = Appointment::where('id', '!=', $appointment->id)
-                ->where('appointment_date', $appointment->appointment_date)
-                ->where('stylist_id', $selectedStylistId) // ✅ Hanya cek staf yang dipilih
-                ->whereHas('service', function($q) use ($startTime, $endTime) {
-                    $q->whereRaw("ADDTIME(appointment_time, SEC_TO_TIME(durasi_menit*60)) > ?", [$startTime->format('H:i')])
-                    ->where('appointment_time', '<', $endTime->format('H:i'));
-                })
-                ->count();
+            // Cek tumpang tindih di PHP
+            foreach ($staffAppointments as $other) {
+                $otherStart = Carbon::parse($other->jam_mulai);
+                $otherEnd   = $otherStart->copy()->addMinutes($other->service->durasi_menit);
 
-            if ($conflictCount >= 1) { 
-                return back()->withErrors(['error' => 'Staf ini sudah memiliki appointment pada waktu ini.']);
+                if ($startTime < $otherEnd && $endTime > $otherStart) {
+                    return back()->withErrors(['error' => 'Staf ini sudah memiliki appointment pada waktu yang sama.']);
+                }
             }
 
+            // Kalau tidak bentrok, simpan
             $appointment->stylist_id = $selectedStylistId;
             $appointment->save();
         }

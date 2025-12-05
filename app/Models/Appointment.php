@@ -52,10 +52,11 @@ class Appointment extends Model
         return $this->belongsTo(User::class, 'stylist_id');
     }
 
-    public function transaksi()
-    {
-        return $this->belongsTo(Transaksi::class, 'transaksi_id');
-    }
+    // public function transaksi()
+    // {
+    //     return $this->hasOne(Transaksi::class, 'user_id', 'user_id')
+    //                 ->whereColumn('date', 'appointment_date'); // pastikan kolom 'date' di transaksi cocok dengan 'appointment_date'
+    // }
 
     // SCOPES
     public function scopePending($q)
@@ -68,18 +69,16 @@ class Appointment extends Model
         return $q->where('status', 'confirmed');
     }
 
-    public function scopeUpcoming($q)
+    public function scopeUpcoming($query)
     {
-        return $q->where('appointment_date', '>=', now()->toDateString())
-                 ->whereIn('status', ['pending', 'confirmed']);
+        return $query->where('jadwal', '>=', now())
+                    ->whereIn('status', ['pending','confirmed']);
     }
 
-    public function scopePast($q)
+    public function scopePast($query)
     {
-        return $q->where(function ($q) {
-            $q->where('appointment_date', '<', now()->toDateString())
-              ->orWhere('status', 'completed');
-        });
+        return $query->where('jadwal', '<', now())
+                    ->whereIn('status', ['pending','confirmed']);
     }
 
     // ACCESSORS

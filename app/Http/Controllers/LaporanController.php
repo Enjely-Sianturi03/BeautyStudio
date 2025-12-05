@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use Illuminate\Http\Request;
+use App\Models\Transaksi;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LaporanController extends Controller
@@ -15,21 +16,35 @@ class LaporanController extends Controller
 
         // Ambil data + relasi user dan service
         $q = Appointment::with(['user', 'service'])
-            ->orderBy('appointment_date', 'desc');
+            ->where('status', 'completed') 
+            ->orderBy('jadwal', 'desc');
 
         if ($from) {
-            $q->whereDate('appointment_date', '>=', $from);
+            $q->whereDate('jadwal', '>=', $from);
         }
 
         if ($to) {
-            $q->whereDate('appointment_date', '<=', $to);
+            $q->whereDate('jadwal', '<=', $to);
         }
 
         // Pagination
         $data = $q->paginate(15);
 
+        $data->getCollection()->transform(function ($appointment) {
+            // Ambil transaksi terbaru berdasarkan user + service
+            $transaksi = \App\Models\Transaksi::where('user_id', $appointment->user_id)
+                ->where('service_id', $appointment->service_id)
+                ->latest('id')
+                ->first();
+
+            $appointment->payment_method = $transaksi?->payment_method;
+            $appointment->payment_proof  = $transaksi?->payment_proof;
+
+            return $appointment;
+        });
+
         // Hitung total dari harga layanan
-        $total = (clone $q)->get()->sum(fn ($item) => $item->service->harga ?? 0);
+        $total = $data->sum(fn($item) => $item->service->harga ?? 0);
 
         return view('admin.laporan.index', compact('data', 'from', 'to', 'total'));
     }
@@ -41,14 +56,15 @@ class LaporanController extends Controller
         $to   = $request->date('to');
 
         $q = Appointment::with(['user', 'service'])
-            ->orderBy('appointment_date', 'asc');
+            ->where('status', 'completed')
+            ->orderBy('jadwal', 'asc');
 
         if ($from) {
-            $q->whereDate('appointment_date', '>=', $from);
+            $q->whereDate('jadwal', '>=', $from);
         }
 
         if ($to) {
-            $q->whereDate('appointment_date', '<=', $to);
+            $q->whereDate('jadwal', '<=', $to);
         }
 
         $filename = 'laporan-appointment-' . now()->format('Ymd_His') . '.csv';

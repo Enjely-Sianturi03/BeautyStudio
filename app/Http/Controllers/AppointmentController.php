@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Service;
 use App\Models\Stylist;
+use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,15 +19,15 @@ class AppointmentController extends Controller
         $upcomingAppointments = Auth::user()->appointments()
             ->upcoming()
             ->with(['service', 'stylist'])
-            ->orderBy('appointment_date')
-            ->orderBy('appointment_time')
+            ->orderBy('jadwal')
+            ->orderBy('jam_mulai')
             ->get();
 
         $pastAppointments = Auth::user()->appointments()
             ->past()
             ->with(['service', 'stylist'])
-            ->orderBy('appointment_date', 'desc')
-            ->orderBy('appointment_time', 'desc')
+            ->orderBy('jadwal')
+            ->orderBy('jam_mulai')
             ->paginate(10);
 
         return view('appointments.index', compact('upcomingAppointments', 'pastAppointments'));
@@ -73,43 +74,42 @@ class AppointmentController extends Controller
     /**
      * Store a newly created appointment WITH PAYMENT.
      */
-    public function store(Request $request)
-    {
-        $request->validate([
-        'name' => 'required|string|max:255',
+public function store(Request $request)
+{
+    $request->validate([
         'service_id' => 'required|exists:services,id',
-        'appointment_date' => 'required|date',
-        'appointment_time' => 'required',
-        'payment_method' => 'required|string',
-        'payment_proof' => $request->payment_method !== 'Cash' ? 'required|image|max:2048' : 'nullable|image|max:2048',
+        'jadwal' => 'required|date',
+        'jam_mulai' => 'required',
+        'payment_method' => 'nullable|string',
+        'payment_proof' => 'nullable|image|max:2048',
     ]);
 
-    // Hitung jumlah booking di slot itu
-    $count = Appointment::where('appointment_date', $request->appointment_date)
-                        ->where('appointment_time', $request->appointment_time)
-                        ->count();
-
-    if ($count >= 3) {
-        return back()->withInput()->withErrors(['appointment_time' => 'This time slot is already full (3 bookings max).']);
-    }
-
-    // Simpan appointment
     $appointment = new Appointment();
-    $appointment->user_id = auth()->id();
-    $appointment->name = $request->name;
+    $appointment->user_id = Auth::id(); // ✅ ambil user login
     $appointment->service_id = $request->service_id;
-    $appointment->appointment_date = $request->appointment_date;
-    $appointment->appointment_time = $request->appointment_time;
-    $appointment->payment_method = $request->payment_method;
-
-    if ($request->hasFile('payment_proof')) {
-        $appointment->payment_proof = $request->file('payment_proof')->store('payment_proofs', 'public');
-    }
-
+    $appointment->jadwal = $request->jadwal;
+    $appointment->jam_mulai = $request->jam_mulai;
+    $appointment->jam_selesai = $request->jam_selesai ?? null;
+    $appointment->status = 'pending';
     $appointment->save();
 
-    return redirect()->route('appointments.index')->with('success', 'Appointment successfully booked!');
+    // Simpan pembayaran ke transaksi, jika ada
+    if ($request->payment_method || $request->hasFile('payment_proof')) {
+        $transaksi = new Transaksi();
+        $transaksi->appointment_id = $appointment->id;
+        $transaksi->service_id = $appointment->service_id;
+        $transaksi->user_id = Auth::id();
+        $transaksi->payment_method = $request->payment_method ?? null;
+        if ($request->hasFile('payment_proof')) {
+            $transaksi->payment_proof = $request->file('payment_proof')->store('payment_proofs', 'public');
+        }
+        $transaksi->status = $request->payment_method ? 'paid' : 'pending';
+        $transaksi->date = $appointment->jadwal;
+        $transaksi->save();
     }
+
+    return redirect()->route('appointments.index')->with('success', 'Appointment berhasil dibuat!');
+}
 
     /**
      * Display the specified appointment.

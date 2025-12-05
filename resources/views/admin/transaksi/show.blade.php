@@ -17,29 +17,30 @@
         <div>
             <p class="mb-3">
                 <strong>Tanggal:</strong><br>
-                {{ \Carbon\Carbon::parse($transaksi->appointment_date)->format('d/m/Y') }}
+                {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d/m/Y') }}
             </p>
 
             <p class="mb-3">
                 <strong>Pelanggan:</strong><br>
-                {{ $transaksi->pelanggan->nama ?? '-' }}
-            </p>
-
-            <p class="mb-3">
-                <strong>Metode Pembayaran:</strong><br>
-                {{ strtoupper($transaksi->payment_method ?? '-') }}
+                {{ $appointment->user->name ?? '-' }}
             </p>
 
             <p class="mb-3">
                 <strong>Status:</strong><br>
                 <span class="px-3 py-1 rounded text-sm font-bold
-                    @if($transaksi->status == 'pending') bg-yellow-100 text-yellow-700
-                    @elseif($transaksi->status == 'confirmed') bg-blue-100 text-blue-700
-                    @elseif($transaksi->status == 'cancelled') bg-red-100 text-red-700
-                    @elseif($transaksi->status == 'completed') bg-green-100 text-green-700
+                    @if($appointment->status == 'pending') bg-yellow-100 text-yellow-700
+                    @elseif($appointment->status == 'confirmed') bg-blue-100 text-blue-700
+                    @elseif($appointment->status == 'cancelled') bg-red-100 text-red-700
+                    @elseif($appointment->status == 'completed') bg-green-100 text-green-700
                     @else bg-gray-200 text-gray-700 @endif">
-                    {{ strtoupper($transaksi->status) }}
+                    {{ strtoupper($appointment->status) }}
                 </span>
+            </p>
+
+            {{-- Metode Pembayaran --}}
+            <p class="mb-3">
+                <strong>Metode Pembayaran:</strong><br>
+                {{ $transaksi ? strtoupper($transaksi->payment_method) : '-' }}
             </p>
         </div>
 
@@ -49,14 +50,15 @@
         <div>
             <p class="mb-3">
                 <strong>Layanan:</strong><br>
-                {{ $transaksi->service->nama ?? '-' }}
+                {{ $appointment->service->nama ?? '-' }}
             </p>
 
+            {{-- Bukti Pembayaran --}}
             <p class="mb-1">
                 <strong>Bukti Pembayaran:</strong>
             </p>
 
-            @if($transaksi->payment_proof)
+            @if($transaksi && $transaksi->payment_proof)
                 <img src="{{ asset('storage/' . $transaksi->payment_proof) }}"
                      alt="Bukti Pembayaran"
                      class="w-full max-w-md rounded shadow border">
@@ -67,13 +69,12 @@
 
     </div>
 
-    {{-- ================================================= --}}
-    {{-- TOMBOL AKSI (CONFIRM / CANCEL) --}}
-    {{-- ================================================= --}}
+    {{-- ===================== --}}
+    {{-- TOMBOL AKSI --}}
+    {{-- ===================== --}}
     <div class="mt-6 flex gap-3 items-center">
 
-        @if($transaksi->status == 'pending')
-
+        @if($transaksi && in_array($transaksi->status, ['pending', 'paid']))
             {{-- TOMBOL CONFIRM --}}
             <form action="{{ route('admin.transaksi.confirm', $transaksi->id) }}"
                   method="POST"
@@ -95,7 +96,6 @@
                     Cancel
                 </button>
             </form>
-
         @endif
 
         {{-- TOMBOL KEMBALI --}}
