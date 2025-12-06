@@ -30,14 +30,14 @@ class OwnerController extends Controller
 
         // Data Riwayat Transaksi
         $transactions = Appointment::with(['user','service'])
-                        ->orderBy('appointment_date', 'desc')
+                        ->orderBy('jadwal', 'desc')
                         ->take(10)
                         ->get();
 
         // Pendapatan Mingguan
         // DAYOFWEEK(): 1 = Minggu, 2 = Senin, ... , 7 = Sabtu
         $weeklyRevenue = Appointment::join('services', 'appointments.service_id', '=', 'services.id')
-                        ->selectRaw('DAYOFWEEK(appointment_date) as day, SUM(services.harga) as total')
+                        ->selectRaw('DAYOFWEEK(jadwal) as day, SUM(services.harga) as total')
                         ->groupBy('day')
                         ->pluck('total', 'day')
                         ->toArray();

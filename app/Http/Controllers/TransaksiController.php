@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\{
     Transaksi,
     TransaksiItem,
-    Jadwal,
     Service
 };
 use App\Models\User;
@@ -26,10 +25,10 @@ class TransaksiController extends Controller
         $layanans = Service::orderBy('nama')->get();
 
         // Jadwal (jika masih dibutuhkan)
-        $jadwals = Jadwal::with(['user', 'service'])
-            ->where('status', 'dijadwalkan')
-            ->orderBy('mulai_at', 'DESC')
-            ->get();
+        // $jadwals = Jadwal::with(['user', 'service'])
+        //     ->where('status', 'dijadwalkan')
+        //     ->orderBy('mulai_at', 'DESC')
+        //     ->get();
 
         // Ambil appointments
         $appointments = Appointment::with(['service','stylist','user'])
@@ -42,7 +41,7 @@ class TransaksiController extends Controller
         });
 
         return view('admin.transaksi.index', compact(
-            'appointments', 'users', 'layanans', 'jadwals', 'transaksi'
+            'appointments', 'users', 'layanans', 'transaksi'
         ));
     }
 

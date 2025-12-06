@@ -173,7 +173,7 @@
                     <h3 class="text-2xl font-light mb-4">{{ $service->name }}</h3>
                     <p class="text-pink-200 mb-6 leading-relaxed">{{ Str::limit($service->description, 120) }}</p>
                     <div class="mb-6">
-                        <span class="text-3xl font-light">${{ number_format($service->price, 0) }}</span>
+                        <span class="text-3xl font-light">Rp{{ number_format($service->price, 0) }}</span>
                         <span class="text-pink-300 text-sm ml-2">{{ $service->formatted_duration }}</span>
                     </div>
                     <a href="{{ route('services.show', $service) }}" class="inline-block text-sm border border-pink-200 px-6 py-2 hover:bg-pink-200 hover:text-pink-900 transition rounded-full">

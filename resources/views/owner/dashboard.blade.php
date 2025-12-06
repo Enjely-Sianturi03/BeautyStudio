@@ -78,7 +78,7 @@
                     <tbody>
                         @forelse ($transactions as $t)
                             <tr class="border-b hover:bg-pink-50 transition">
-                                <td class="px-6 py-3">{{ $t->appointment_date }}</td>
+                                <td class="px-6 py-3">{{ $t->jadwal }}</td>
                                 <td class="px-6 py-3">{{ $t->user->name ?? '-' }}</td>
                                 <td class="px-6 py-3">{{ $t->service->nama ?? '-' }}</td>
                                 <td class="px-6 py-3 font-semibold text-pink-700">

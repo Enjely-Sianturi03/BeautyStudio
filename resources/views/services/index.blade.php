@@ -4,93 +4,110 @@
 
 @section('content')
 <!-- Page Header -->
-<section class="relative h-96 bg-gradient-to-r from-pink-900 to-pink-700 flex items-center justify-center">
-    <div class="text-center text-white px-4">
-        <h1 class="text-5xl md:text-6xl font-light mb-4">LAYANAN KAMI</h1>
-        <p class="text-xl md:text-2xl font-light">Premium hair care tailored to your unique style</p>
+<section class="relative h-[500px] bg-gradient-to-br from-pink-600 via-pink-700 to-pink-900 flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 bg-black opacity-20"></div>
+    <div class="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
+        <h1 class="text-5xl md:text-7xl font-extralight mb-6 tracking-wide">LAYANAN KAMI</h1>
+        <div class="w-24 h-1 bg-white mx-auto mb-6"></div>
+        <p class="text-lg md:text-xl font-light opacity-90 leading-relaxed">
+            Premium hair care tailored to your unique style
+        </p>
     </div>
 </section>
 
 <!-- Services Section -->
-<section class="py-20 bg-white">
+<section class="py-24 bg-gradient-to-b from-gray-50 to-white">
     <div class="container mx-auto px-4">
-        @foreach($categories as $categoryKey => $categoryName)
-            @if(isset($services[$categoryKey]) && $services[$categoryKey]->count() > 0)
-            <div class="mb-20">
-                <h2 class="text-4xl font-light mb-10 pb-4 border-b-2 border-gray-200">{{ $categoryName }}</h2>
+        <!-- Section Title -->
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-light text-gray-800 mb-4">Explore Our Services</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">
+                Discover the perfect treatment for your hair with our range of professional services
+            </p>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            @foreach($services as $service)
+            <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100">
+                <!-- Card Header with Gradient -->
+                <div class="h-3 bg-gradient-to-r from-pink-500 to-pink-700"></div>
                 
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    @foreach($services[$categoryKey] as $service)
-                    <div class="bg-white border border-gray-200 hover:border-gray-400 transition shadow-lg hover:shadow-xl transform hover:-translate-y-1 rounded-lg overflow-hidden">
-                        @if($service->image)
-                        <div class="h-48 overflow-hidden">
-                            <img src="{{ asset('storage/' . $service->image) }}" 
-                                 alt="{{ $service->name }}" 
-                                 class="w-full h-full object-cover">
+                <div class="p-8">
+                    <!-- Service Title -->
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-800 group-hover:text-pink-600 transition-colors">
+                        {{ $service->nama }}
+                    </h3>
+
+                    <!-- Description -->
+                    <p class="text-gray-600 mb-6 leading-relaxed min-h-[80px]">
+                        {{ Str::limit($service->deskripsi, 120) }}
+                    </p>
+
+                    <!-- Divider -->
+                    <div class="border-t border-gray-200 mb-6"></div>
+
+                    <!-- Price and Duration -->
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <span class="text-3xl font-bold text-pink-600">
+                                Rp{{ number_format($service->harga, 0, ',', '.') }}
+                            </span>
                         </div>
-                        @else
-                        <div class="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                            <i class="fas fa-cut text-6xl text-gray-400"></i>
-                        </div>
-                        @endif
-                        
-                        <div class="p-6">
-                            <h3 class="text-2xl font-medium mb-3">{{ $service->name }}</h3>
-                            <p class="text-gray-600 mb-4 leading-relaxed">{{ Str::limit($service->description, 150) }}</p>
-                            
-                            <div class="flex justify-between items-center mb-4">
-                                <div>
-                                    <span class="text-3xl font-light text-gray-900">${{ number_format($service->price, 0) }}</span>
-                                </div>
-                                <div class="text-gray-500">
-                                    <i class="far fa-clock mr-1"></i>
-                                    {{ $service->formatted_duration }}
-                                </div>
-                            </div>
-                            
-                            <div class="flex space-x-3">
-                                <a href="{{ route('services.show', $service) }}" 
-                                   class="flex-1 text-center border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition font-medium">
-                                    VIEW DETAILS
-                                </a>
-                                <a href="{{ route('appointments.create', ['service_id' => $service->id]) }}" 
-                                   class="flex-1 text-center bg-black text-white px-4 py-2 hover:bg-gray-800 transition font-medium">
-                                    BOOK NOW
-                                </a>
-                            </div>
+                        <div class="flex items-center text-gray-500">
+                            <i class="far fa-clock mr-2"></i>
+                            <span class="text-sm font-medium">{{ $service->durasi_menit }} min</span>
                         </div>
                     </div>
-                    @endforeach
+
+                    <!-- Button -->
+                    <a href="{{ route('services.show', $service->id) }}" 
+                       class="block w-full text-center bg-gradient-to-r from-pink-500 to-pink-600 text-white px-6 py-3 rounded-lg hover:from-pink-600 hover:to-pink-700 transition-all duration-300 font-medium shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                        Learn More
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
                 </div>
             </div>
-            @endif
-        @endforeach
-
-        @if($services->isEmpty())
-        <div class="text-center py-20">
-            <i class="fas fa-info-circle text-6xl text-gray-300 mb-4"></i>
-            <p class="text-xl text-gray-500">No services available at the moment.</p>
+            @endforeach
         </div>
-        @endif
     </div>
 </section>
 
 <!-- CTA Section -->
-<section class="py-20 bg-gray-900 text-white">
-    <div class="container mx-auto px-4 text-center">
-        <h2 class="text-4xl font-light mb-6">Not Sure Which Service to Choose?</h2>
-        <p class="text-xl mb-10 max-w-2xl mx-auto">
-            Our expert stylists are here to help you find the perfect service for your needs
-        </p>
-        <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6">
-            <a href="{{ route('appointments.create') }}" 
-               class="inline-block bg-white text-black px-10 py-4 hover:bg-gray-200 transition font-medium text-lg">
-                BOOK CONSULTATION
-            </a>
-            <a href="tel:5621234567" 
-               class="inline-block border-2 border-white px-10 py-4 hover:bg-white hover:text-black transition font-medium text-lg">
-                <i class="fas fa-phone mr-2"></i> CALL US
-            </a>
+<section class="py-24 bg-gradient-to-br from-gray-900 via-gray-800 to-pink-900 text-white relative overflow-hidden">
+    <!-- Decorative Elements -->
+    <div class="absolute top-0 left-0 w-64 h-64 bg-pink-500 rounded-full filter blur-3xl opacity-10"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-pink-600 rounded-full filter blur-3xl opacity-10"></div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+            <!-- Icon -->
+            <div class="w-20 h-20 bg-pink-500 bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-8">
+                <i class="fas fa-question-circle text-4xl text-pink-400"></i>
+            </div>
+
+            <h2 class="text-4xl md:text-5xl font-light mb-6 leading-tight">
+                Not Sure Which Service to Choose?
+            </h2>
+            <p class="text-xl mb-12 max-w-2xl mx-auto text-gray-300 leading-relaxed">
+                Our expert stylists are here to help you find the perfect service for your needs. Get personalized recommendations today.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+                <a href="https://wa.me/6283876821276?text=Halo%20kak,%20saya%20ingin%20bertanya%20tentang%20layanan%20salon."
+                class="group inline-flex items-center border-2 border-white px-10 py-4 rounded-lg hover:bg-white hover:text-gray-900 transition-all duration-300 font-semibold text-lg transform hover:-translate-y-1">
+                    <i class="fas fa-phone mr-3 group-hover:rotate-12 transition-transform"></i>
+                    CALL US NOW
+                </a>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="mt-12 pt-8 border-t border-gray-700">
+                <p class="text-gray-400">
+                    Available Monday - Saturday, 9:00 AM - 8:00 PM
+                </p>
+            </div>
         </div>
     </div>
 </section>

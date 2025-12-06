@@ -13,10 +13,8 @@ class ServiceController extends Controller
     public function index()
     {
         $services = Service::active()
-            ->orderBy('category')
-            ->orderBy('name')
-            ->get()
-            ->groupBy('category');
+            ->orderBy('nama')
+            ->get();
 
         $categories = [
             'haircut' => 'Haircuts',
@@ -39,7 +37,6 @@ class ServiceController extends Controller
         }
 
         $relatedServices = Service::active()
-            ->where('category', $service->category)
             ->where('id', '!=', $service->id)
             ->take(3)
             ->get();

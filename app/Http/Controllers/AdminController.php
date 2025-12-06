@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User; 
 use App\Models\Service;
 use App\Models\Transaksi;
-use App\Models\Transaction;
-use App\Models\Jadwal; 
 
 class AdminController extends Controller
 {
@@ -22,12 +20,15 @@ class AdminController extends Controller
         $totalServices = Service::count();
         
         // Menghitung jadwal hari ini (asumsi Model Jadwal ada dan memiliki kolom 'mulai_at')
-        $totalSchedulesToday = Jadwal::whereDate('mulai_at', now()->toDateString())->count();
+        $totalSchedulesToday = \App\Models\Appointment::whereDate('jadwal', now()->toDateString())->count();
         
         // Menghitung pendapatan bulan ini
-        $revenueThisMonth = Transaction::whereMonth('created_at', now()->month)
-                                     ->whereYear('created_at', now()->year)
-                                     ->sum('total');
+        $revenueThisMonth = \DB::table('transaksi as t')
+                            ->join('appointments as a', 't.appointment_id', '=', 'a.id')
+                            ->join('services as s', 'a.service_id', '=', 's.id')
+                            ->whereMonth('t.created_at', now()->month)
+                            ->whereYear('t.created_at', now()->year)
+                            ->sum('s.harga');
 
         // Data Pelanggan Terbaru (5 data)
         $latestCustomers = User::where('role', 'customer')
