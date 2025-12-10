@@ -100,22 +100,21 @@
                             <i data-lucide="map" class="w-5 h-5 text-pink-500 flex-shrink-0 mt-1 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold text-gray-800">Alamat Kami</h4>
-                                <p class="text-sm">Jalan Kenanga Indah No. 45, Komplek Perumahan Elite, Jakarta Selatan, 12345</p>
+                                <p class="text-sm">Jl. Jamin Ginting No.444, Padang Bulan, Medan</p>
                             </div>
                         </li>
                         <li class="flex items-start">
                             <i data-lucide="phone" class="w-5 h-5 text-pink-500 flex-shrink-0 mt-1 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold text-gray-800">Telepon</h4>
-                                <p class="text-sm">+62 812-3456-7890</p>
+                                <p class="text-sm">+62 853-7395-7801</p>
                             </div>
                         </li>
                         <li class="flex items-start">
                             <i data-lucide="clock" class="w-5 h-5 text-pink-500 flex-shrink-0 mt-1 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold text-gray-800">Jam Operasional</h4>
-                                <p class="text-sm">Senin - Sabtu: 09.00 - 18.00 WIB</p>
-                                <p class="text-sm text-pink-500">Minggu: Tutup</p>
+                                <p class="text-sm">Senin - Minggu: 09.00 - 18.00 WIB</p>
                             </div>
                         </li>
                     </ul>
@@ -125,14 +124,14 @@
                         <i data-lucide="map" class="w-4 h-4 text-pink-500 mr-2"></i> Lihat di Peta
                     </h4>
                     <div class="rounded-2xl overflow-hidden shadow-lg border-2 border-white ring-2 ring-pink-300/50">
-                        <iframe
-                            width="100%"
-                            height="200"
-                            style="border:0;"
-                            loading="lazy"
-                            allowfullscreen
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31732.12781533649!2d106.82025732290747!3d-6.208763462947239!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3e46c968f45%3A0x6b49e6f1f23c7b2e!2sJakarta!5e0!3m2!1sen!2sid!4v1678822456789!5m2!1sen!2sid"
-                            aria-label="Lokasi Jakarta (Placeholder)">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3707.317771873475!2d98.6588382746148!3d3.5584525505010336!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x303131c259a962bb%3A0x3ab3c5f9a091fbc9!2sJl.%20Jamin%20Ginting%20No.444%2C%20Padang%20Bulan%2C%20Kec.%20Medan%20Baru%2C%20Kota%20Medan%2C%20Sumatera%20Utara%2020157!5e1!3m2!1sid!2sid!4v1765380816858!5m2!1sid!2sid" 
+                            width="100%" 
+                            height="200" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
                         </iframe>
                     </div>
                 </section>

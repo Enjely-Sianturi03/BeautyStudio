@@ -231,15 +231,11 @@
                         <div class="space-y-3 text-gray-700">
                             <p class="flex items-start">
                                 <i class="fas fa-map-marker-alt mr-3 mt-1 text-gray-400"></i>
-                                <span>123 Main Street, Whittier, CA 90601</span>
+                                <span>Jl. Jamin Ginting No.444, Padang Bulan, Medan</span>
                             </p>
                             <p class="flex items-center">
                                 <i class="fas fa-phone mr-3 text-gray-400"></i>
-                                <a href="tel:5621234567" class="hover:underline">(562) 123-4567</a>
-                            </p>
-                            <p class="flex items-center">
-                                <i class="fas fa-envelope mr-3 text-gray-400"></i>
-                                <a href="mailto:info@artikasalon.com" class="hover:underline">info@artikasalon.com</a>
+                                <a href="tel:5621234567" class="hover:underline">085373957801</a>
                             </p>
                         </div>
                     </div>

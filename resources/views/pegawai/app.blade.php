@@ -300,15 +300,11 @@
                     <ul class="space-y-3 text-gray-600">
                         <li class="flex items-start">
                             <i class="fas fa-map-marker-alt text-pink-500 mr-3 mt-1"></i>
-                            <span>Jl. Kecantikan No. 123, Medan</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope text-pink-500 mr-3"></i>
-                            <span>info@beautystudio.com</span>
+                            <span>Jl. Jamin Ginting No.444, Padang Bulan, Medan</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-phone text-pink-500 mr-3"></i>
-                            <span>+62 812-3456-7890</span>
+                            <span>+62 853-7395-7801</span>
                         </li>
                     </ul>
                 </div>

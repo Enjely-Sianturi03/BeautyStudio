@@ -181,9 +181,7 @@
                     <h3 class="text-2xl mb-4">Beauty Studio</h3>
                     <p class="text-pink-100 mb-4">A destination salon in Whittier, CA known for customer service and sensory experience.</p>
                     <div class="flex space-x-4">
-                        <a href="#" class="text-pink-200 hover:text-white"><i class="fab fa-facebook-f text-xl"></i></a>
-                        <a href="https://instagram.com/artikahairspa" target="_blank" class="text-pink-200 hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
-                        <a href="#" class="text-pink-200 hover:text-white"><i class="fab fa-twitter text-xl"></i></a>
+                        <a href="https://instagram.com/ssbeauty_studio" target="_blank" class="text-pink-200 hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
                     </div>
                 </div>
 
@@ -205,9 +203,8 @@
                 <div>
                     <h4 class="text-lg font-semibold mb-4">CONTACT</h4>
                     <ul class="space-y-3 text-pink-100">
-                        <li class="flex items-start"><i class="fas fa-map-marker-alt mr-3"></i>123 Main Street, Whittier, CA 90601</li>
-                        <li class="flex items-center"><i class="fas fa-phone mr-3"></i>(562) 555-1234</li>
-                        <li class="flex items-center"><i class="fas fa-envelope mr-3"></i>info@artikasalon.com</li>
+                        <li class="flex items-start"><i class="fas fa-map-marker-alt mr-3"></i>Jl. Jamin Ginting No.444, Padang Bulan, Medan</li>
+                        <li class="flex items-center"><i class="fas fa-phone mr-3"></i>085373957801</li>
                     </ul>
                 </div>
 
@@ -215,9 +212,7 @@
                 <div>
                     <h4 class="text-lg font-semibold mb-4">HOURS</h4>
                     <ul class="space-y-2 text-pink-100">
-                        <li class="flex justify-between"><span>Mon - Fri</span><span>9 AM - 7 PM</span></li>
-                        <li class="flex justify-between"><span>Saturday</span><span>9 AM - 6 PM</span></li>
-                        <li class="flex justify-between"><span>Sunday</span><span>Closed</span></li>
+                        <li class="flex justify-between"><span>Senin - Minggu</span><span>9 AM - 6 PM</span></li>
                     </ul>
                 </div>
             </div>
@@ -238,29 +233,6 @@
         </div>
     </footer>
 
-<!-- <<<<<<< HEAD
-    <script>
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-
-        window.addEventListener('scroll', function() {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) navbar.classList.add('shadow-lg');
-            else navbar.classList.remove('shadow-lg');
-        });
-
-
-        // Auto hide alerts
-        setTimeout(() => {
-            document.querySelectorAll('[role="alert"]').forEach(alert => {
-                alert.style.transition = 'opacity 0.5s';
-                alert.style.opacity = '0';
-                setTimeout(() => alert.remove(), 500);
-            });
-        }, 5000);
-    </script>
-======= -->
 <script>
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');

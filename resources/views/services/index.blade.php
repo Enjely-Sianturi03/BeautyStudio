@@ -95,7 +95,7 @@
 
             <!-- CTA Buttons -->
             <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
-                <a href="https://wa.me/6283876821276?text=Halo%20kak,%20saya%20ingin%20bertanya%20tentang%20layanan%20salon."
+                <a href="https://wa.me/6285373957801?text=Halo%20kak,%20saya%20ingin%20bertanya%20tentang%20layanan%20salon."
                 class="group inline-flex items-center border-2 border-white px-10 py-4 rounded-lg hover:bg-white hover:text-gray-900 transition-all duration-300 font-semibold text-lg transform hover:-translate-y-1">
                     <i class="fas fa-phone mr-3 group-hover:rotate-12 transition-transform"></i>
                     CALL US NOW
@@ -104,8 +104,7 @@
 
             <!-- Contact Info -->
             <div class="mt-12 pt-8 border-t border-gray-700">
-                <p class="text-gray-400">
-                    Available Monday - Saturday, 9:00 AM - 8:00 PM
+                <p class="text-gray-400"> Senin - Minggu, 9:00 AM - 8:00 PM
                 </p>
             </div>
         </div>

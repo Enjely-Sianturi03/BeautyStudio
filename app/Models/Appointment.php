@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute; // 💡 Diperlukan untuk Accessor/Mutator
 use Carbon\Carbon;
 
 class Appointment extends Model
@@ -15,9 +16,13 @@ class Appointment extends Model
         'name',
         'service_id',
         'stylist_id', 
-        'appointment_date',
-        'appointment_time',
-        'end_time',
+        
+        // 🚨 PERBAIKAN: Mengganti 'appointment_date' dengan 'jadwal'
+        'jadwal',
+        // 🚨 PERBAIKAN: Mengganti 'appointment_time' dengan 'jam_mulai'
+        'jam_mulai',
+        
+        'jam_selesai', // 🚨 PERBAIKAN: Mengganti 'end_time' dengan 'jam_selesai' (berdasarkan skema SQL)
         'status',
         'notes',
         'admin_notes',
@@ -26,10 +31,10 @@ class Appointment extends Model
     ];
 
     protected $casts = [
-        'appointment_date' => 'date',
-        // keep appointment_time as time string (no need for datetime cast with format here),
-        // if you prefer Carbon instance, you can cast to 'datetime'
-        'appointment_time' => 'string',
+        // 🚨 PERBAIKAN: Mengganti 'appointment_date' dengan 'jadwal' dan 'jam_mulai'
+        'jadwal' => 'date',
+        'jam_mulai' => 'datetime', // Casting ke datetime agar menjadi objek Carbon yang bisa diformat.
+        'jam_selesai' => 'datetime', // Tambahkan casting untuk jam_selesai
     ];
 
     // RELATIONS
@@ -45,20 +50,12 @@ class Appointment extends Model
 
     /**
      * Stylist / staff yang menangani appointment.
-     * Pastikan stylist_id menunjuk ke tabel users (pegawai).
      */
     public function stylist()
     {
         return $this->belongsTo(User::class, 'stylist_id');
     }
 
-    // public function transaksi()
-    // {
-    //     return $this->hasOne(Transaksi::class, 'user_id', 'user_id')
-    //                 ->whereColumn('date', 'appointment_date'); // pastikan kolom 'date' di transaksi cocok dengan 'appointment_date'
-    // }
-
-    // SCOPES
     public function scopePending($q)
     {
         return $q->where('status', 'pending');
@@ -71,52 +68,76 @@ class Appointment extends Model
 
     public function scopeUpcoming($query)
     {
+        // 💡 Scope menggunakan nama kolom DB yang benar: 'jadwal'
         return $query->where('jadwal', '>=', now())
-                    ->whereIn('status', ['pending','confirmed']);
+                     ->whereIn('status', ['pending','confirmed']);
     }
 
     public function scopePast($query)
     {
+        // 💡 Scope menggunakan nama kolom DB yang benar: 'jadwal'
         return $query->where('jadwal', '<', now())
-                    ->whereIn('status', ['pending','confirmed']);
+                     ->whereIn('status', ['pending','confirmed']);
     }
 
-    // ACCESSORS
+    protected function appointmentDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => $this->jadwal,
+        );
+    }
+
+    protected function appointmentTime(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => $this->jam_mulai,
+        );
+    }
+
     public function getFormattedDateAttribute()
     {
-        return Carbon::parse($this->appointment_date)->format('d M Y');
+
+        if ($this->appointment_date) {
+            return $this->appointment_date->format('d M Y');
+        }
+        return null;
     }
 
     public function getFormattedTimeAttribute()
     {
-        return Carbon::parse($this->appointment_time)->format('H:i');
+        if ($this->appointment_time) {
+            return $this->appointment_time->format('H:i');
+        }
+        return null;
     }
 
     public function getFormattedDateTimeAttribute()
     {
-        return Carbon::parse($this->appointment_date)->format('d M Y') .
-               ' - ' .
-               Carbon::parse($this->appointment_time)->format('H:i');
+        $date = $this->formatted_date;
+        $time = $this->formatted_time;
+        
+        if ($date && $time) {
+            return "{$date} - {$time}";
+        }
+        return $date ?: $time;
     }
 
     public function canBeCancelled(): bool
     {
         return in_array($this->status, ['pending', 'confirmed']) &&
-               Carbon::parse($this->appointment_date)->isFuture();
+                $this->jadwal?->isFuture() ?? false; 
     }
 
-    public function getEndTimeAttribute($value)
+    public function getJamSelesaiAttribute($value) 
     {
         if($value) return $value;
 
-        if($this->service && $this->appointment_time) {
-            return \Carbon\Carbon::parse($this->appointment_time)
+        if($this->service && $this->jam_mulai) {
+            return $this->jam_mulai
                 ->addMinutes($this->service->durasi_menit)
                 ->format('H:i');
         }
 
         return null;
     }
-
-
 }
