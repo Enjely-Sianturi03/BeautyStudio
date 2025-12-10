@@ -14,6 +14,8 @@ class Stylist extends Model
      *
      * @var array<int, string>
      */
+
+    protected $table = 'users';
     protected $fillable = [
         'name',
         'bio',

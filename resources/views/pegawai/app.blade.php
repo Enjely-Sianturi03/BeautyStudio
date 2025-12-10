@@ -159,14 +159,6 @@
                         <i class="fas fa-history"></i>
                         <span>Riwayat</span>
                     </a>
-                    
-                    {{-- Notifications --}}
-                    <div class="relative">
-                        <button class="text-gray-700 hover:text-pink-600 relative">
-                            <i class="fas fa-bell text-xl"></i>
-                            <span class="notification-badge absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">3</span>
-                        </button>
-                    </div>
 
                     {{-- User Dropdown --}}
                     <div class="relative dropdown">
@@ -190,14 +182,6 @@
                             <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-pink-50 flex items-center space-x-3">
                                 <i class="fas fa-user-circle text-pink-500"></i>
                                 <span>Profil Saya</span>
-                            </a>
-                            <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-pink-50 flex items-center space-x-3">
-                                <i class="fas fa-cog text-pink-500"></i>
-                                <span>Pengaturan</span>
-                            </a>
-                            <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-pink-50 flex items-center space-x-3">
-                                <i class="fas fa-question-circle text-pink-500"></i>
-                                <span>Bantuan</span>
                             </a>
                             <div class="border-t border-gray-100"></div>
                             <form action="{{ route('logout') }}" method="POST">

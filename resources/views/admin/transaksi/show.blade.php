@@ -74,25 +74,25 @@
     {{-- ===================== --}}
     <div class="mt-6 flex gap-3 items-center">
 
-        @if($transaksi && in_array($transaksi->status, ['pending', 'paid']))
+        @if($appointment && in_array($appointment->status, ['pending', 'paid']))
             {{-- TOMBOL CONFIRM --}}
-            <form action="{{ route('admin.transaksi.confirm', $transaksi->id) }}"
-                  method="POST"
-                  onsubmit="return confirm('Yakin ingin CONFIRM transaksi ini?');">
+            <form action="{{ route('admin.transaksi.confirm', $appointment->id) }}"
+                method="POST"
+                onsubmit="return confirm('Yakin ingin CONFIRM transaksi ini?');">
                 @csrf
                 <button type="submit"
-                        class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700">
+                    class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700">
                     Confirm
                 </button>
             </form>
 
             {{-- TOMBOL CANCEL --}}
-            <form action="{{ route('admin.transaksi.cancel', $transaksi->id) }}"
-                  method="POST"
-                  onsubmit="return confirm('Batalkan transaksi ini?');">
+            <form action="{{ route('admin.transaksi.cancel', $appointment->id) }}"
+                method="POST"
+                onsubmit="return confirm('Batalkan transaksi ini?');">
                 @csrf
                 <button type="submit"
-                        class="bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700">
+                    class="bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700">
                     Cancel
                 </button>
             </form>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Service;
 use App\Models\Stylist;
+use App\Models\User; 
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -48,27 +49,27 @@ class AppointmentController extends Controller
 
     //     return view('appointments.create', compact('services', 'stylists', 'selectedService'));
     // }
+
     public function create(Request $request)
-{
-    $services = Service::active()->get();
-    $stylists = Stylist::active()->get();
+    {
+        $services = Service::active()->get();
+        $stylists = User::where('role', 'pegawai')->get(); // ✅ Perbaikan
 
-    $selectedService = $request->has('service_id') 
-        ? Service::find($request->service_id) 
-        : null;
+        $selectedService = $request->has('service_id') 
+            ? Service::find($request->service_id) 
+            : null;
 
-    // AMBIL SEMUA APPOINTMENTS USER
-    $appointments = Auth::user()->appointments()
-        ->with(['service', 'stylist'])
-        ->get();
+        $appointments = Auth::user()->appointments()
+            ->with(['service', 'stylist'])
+            ->get();
 
-    return view('appointments.create', compact(
-        'services',
-        'stylists',
-        'selectedService',
-        'appointments' // ✅ wajib ada
-    ));
-}
+        return view('appointments.create', compact(
+            'services',
+            'stylists',
+            'selectedService',
+            'appointments'
+        ));
+    }
 
 
     /**

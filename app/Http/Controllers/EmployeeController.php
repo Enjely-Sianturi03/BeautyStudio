@@ -16,8 +16,8 @@ class EmployeeController extends Controller
         // Ambil semua appointment hari ini untuk stylist yang login
         $appointments = Appointment::with(['user', 'service'])
             ->where('stylist_id', Auth::id())
-            ->whereDate('appointment_date', now()->toDateString())
-            ->orderBy('appointment_time')
+            ->whereDate('jadwal', now()->toDateString()) // <-- PERBAIKAN: Gunakan 'jadwal'
+            ->orderBy('jam_mulai')
             ->get();
 
         // Hitung statistik (pastikan status disimpan lowercase di DB)
@@ -35,8 +35,8 @@ class EmployeeController extends Controller
     {
         $schedules = Appointment::where('stylist_id', Auth::id())
             ->where('status', '!=', 'completed')     
-            ->orderBy('appointment_date', 'asc')
-            ->orderBy('appointment_time', 'asc')
+            ->orderBy('jadwal', 'asc')
+            ->orderBy('jam_mulai', 'asc')
             ->get();
 
         return view('pegawai.jadwal', compact('schedules'));
@@ -46,8 +46,8 @@ class EmployeeController extends Controller
     {
         $history = Appointment::where('stylist_id', Auth::id())
             ->where('status', 'completed')
-            ->orderBy('appointment_date', 'desc')
-            ->orderBy('appointment_time', 'desc')
+            ->orderBy('jadwal', 'desc')
+            ->orderBy('jam_mulai', 'desc')
             ->get();
 
         return view('pegawai.riwayat', compact('history'));
