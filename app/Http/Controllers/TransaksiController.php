@@ -121,9 +121,9 @@ public function show($id)
         $request->validate([
             'user_id'          => 'required|exists:users,id',
             'service_id'       => 'required|exists:services,id',
-            'jadwal' => 'required|date',
+            'appointment_date' => 'required|date',
             'appointment_time' => 'required',
-            'payment_method'   => 'required|string',
+            'payment_method'   => 'required|in:cash,qris,transfer',
         ]);
 
         // Ambil user
@@ -132,23 +132,41 @@ public function show($id)
         // Ambil service
         $service = Service::findOrFail($request->service_id);
 
-        // SIMPAN APPOINTMENT SEBAGAI TRANSAKSI
-        $appointment = Appointment::create([
-            'user_id'          => $user->id,
-            'name'             => $user->name,
-            'service_id'       => $service->id,
-            'stylist_id'       => null,
-            'appointment_date' => $request->appointment_date,
-            'appointment_time' => $request->appointment_time,
-            'payment_method'   => $request->payment_method,
-            'status'           => 'completed',
-            'notes'            => null,
-            'admin_notes'      => null,
-            'payment_proof'    => null,
-        ]);
+        DB::beginTransaction();
+        try {
+            // ✅ SIMPAN APPOINTMENT - HANYA kolom yang PASTI ADA
+            $appointment = Appointment::create([
+                'user_id'       => $user->id,
+                'service_id'    => $service->id,
+                'stylist_id'    => null,
+                'jadwal'        => $request->appointment_date,
+                'jam_mulai'     => $request->appointment_time,
+                'status'        => 'completed',
+                // 🔧 HAPUS 'notes' - kolom ini tidak ada di tabel
+            ]);
 
-        return redirect()->back()->with('ok', 'Transaksi manual berhasil ditambahkan sebagai appointment!');
+            // ✅ SIMPAN DATA PEMBAYARAN ke tabel TRANSAKSI
+            $transaksi = Transaksi::create([
+                'user_id'       => $user->id,
+                'service_id'    => $service->id,
+                'appointment_id'=> $appointment->id, // Link ke appointment
+                'date'          => $request->appointment_date,
+                'total'         => $service->harga,
+                'payment_method'=> $request->payment_method,
+                'status'        => 'paid',
+                'paid_at'       => now(),
+            ]);
+
+            DB::commit();
+
+            return redirect()->back()->with('ok', 'Transaksi manual berhasil ditambahkan!');
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Gagal menyimpan transaksi: ' . $e->getMessage());
+        }
     }
+
     public function confirm($id)
     {
         $appointment = Appointment::findOrFail($id);

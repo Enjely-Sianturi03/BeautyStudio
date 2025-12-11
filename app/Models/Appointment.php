@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute; // 💡 Diperlukan untuk Accessor/Mutator
+use Illuminate\Database\Eloquent\Casts\Attribute; 
 use Carbon\Carbon;
 
 class Appointment extends Model
@@ -13,21 +13,12 @@ class Appointment extends Model
 
     protected $fillable = [
         'user_id',
-        'name',
         'service_id',
         'stylist_id', 
-        
-        // 🚨 PERBAIKAN: Mengganti 'appointment_date' dengan 'jadwal'
         'jadwal',
-        // 🚨 PERBAIKAN: Mengganti 'appointment_time' dengan 'jam_mulai'
         'jam_mulai',
-        
-        'jam_selesai', // 🚨 PERBAIKAN: Mengganti 'end_time' dengan 'jam_selesai' (berdasarkan skema SQL)
+        'jam_selesai', 
         'status',
-        'notes',
-        'admin_notes',
-        'payment_method',
-        'payment_proof',
     ];
 
     protected $casts = [

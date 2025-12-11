@@ -63,7 +63,6 @@ class AppointmentController extends Controller
             'payment_proof' => 'nullable|image|max:2048',
         ]);
 
-        // Create appointment
         $appointment = Appointment::create([
             'user_id' => Auth::id(),
             'service_id' => $request->service_id,
@@ -74,7 +73,6 @@ class AppointmentController extends Controller
             'status' => 'pending',
         ]);
 
-        // Simpan transaksi jika ada pembayaran
         if ($request->payment_method || $request->hasFile('payment_proof')) {
             $paymentProofPath = null;
             
@@ -97,9 +95,7 @@ class AppointmentController extends Controller
         return redirect()->route('appointments.index')
             ->with('success', 'Appointment berhasil dibuat!');
     }
-    /**
-     * Display the specified appointment.
-     */
+
     public function show(Appointment $appointment)
     {
         if ($appointment->user_id !== Auth::id() && !Auth::user()->isAdmin()) {
@@ -109,9 +105,6 @@ class AppointmentController extends Controller
         return view('appointments.show', compact('appointment'));
     }
 
-    /**
-     * Cancel the specified appointment.
-     */
     public function cancel(Appointment $appointment)
     {
         if ($appointment->user_id !== Auth::id() && !Auth::user()->isAdmin()) {

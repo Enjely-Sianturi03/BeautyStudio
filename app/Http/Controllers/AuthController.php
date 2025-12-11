@@ -22,7 +22,6 @@ class AuthController extends Controller
             'password' => 'required|min:6|confirmed',
         ]);
 
-        // Default role otomatis (misalnya customer)
         User::create([
             'name' => $request->name,
             'email' => $request->email,
