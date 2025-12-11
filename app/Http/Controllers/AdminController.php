@@ -10,26 +10,26 @@ use App\Models\Transaksi;
 use App\Models\Appointment;
 use Illuminate\Support\Facades\DB;
 
+// Import MODEL VIEW
+use App\Models\DashboardStats;
+use App\Models\LatestCustomer;
+use App\Models\TodayAppointment;
+use App\Models\MonthlyRevenue;
+
 class AdminController extends Controller
 {
     public function index()
     {
-        $totalCustomers = User::where('role', 'customer')->count();
-        $totalServices = Service::count();
+        // GUNAKAN VIEW - Ambil statistik dashboard
+        $stats = DashboardStats::first();
         
-        $totalSchedulesToday = \App\Models\Appointment::whereDate('jadwal', now()->toDateString())->count();
-        
-        $revenueThisMonth = \DB::table('transaksi as t')
-                            ->join('appointments as a', 't.appointment_id', '=', 'a.id')
-                            ->join('services as s', 'a.service_id', '=', 's.id')
-                            ->whereMonth('t.created_at', now()->month)
-                            ->whereYear('t.created_at', now()->year)
-                            ->sum('s.harga');
+        $totalCustomers = $stats->total_customers ?? 0;
+        $totalServices = $stats->total_services ?? 0;
+        $totalSchedulesToday = $stats->total_schedules_today ?? 0;
+        $revenueThisMonth = $stats->revenue_this_month ?? 0;
 
-        $latestCustomers = User::where('role', 'customer')
-                             ->latest()
-                             ->take(5)
-                             ->get();
+        // GUNAKAN VIEW - Ambil 5 pelanggan terbaru
+        $latestCustomers = LatestCustomer::limit(5)->get();
 
         return view('admin.dashboard', compact(
             'totalCustomers',
@@ -46,7 +46,6 @@ class AdminController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        
         return view('admin.pelanggan.index', compact('data'));
     }
 
@@ -92,7 +91,7 @@ class AdminController extends Controller
 
     public function pelangganDestroy(User $pelanggan)
     {
-        Transaksi::where('customer_id', $pelanggan->id)->delete();
+        Transaksi::where('user_id', $pelanggan->id)->delete();
         
         $pelanggan->delete();
 
@@ -124,7 +123,7 @@ class AdminController extends Controller
 
     public function layananDestroy(Service $layanan)
     {
-        Transaction::where('service_id', $layanan->id)->delete();
+        Transaksi::where('service_id', $layanan->id)->delete();
 
         $layanan->delete();
 
@@ -134,6 +133,10 @@ class AdminController extends Controller
 
     public function jadwalIndex()
     {
+        // OPTIONAL: Bisa gunakan TodayAppointment view jika hanya hari ini
+        // $appointments = TodayAppointment::all();
+        
+        // Atau tetap gunakan eloquent untuk semua jadwal
         $appointments = Appointment::with(['user', 'service', 'stylist'])->get(); 
         $staff = User::where('role', 'pegawai')->get(); 
 

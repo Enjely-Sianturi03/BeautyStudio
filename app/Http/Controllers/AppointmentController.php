@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\AppointmentDetail; // IMPORT VIEW MODEL
 use App\Models\Service;
 use App\Models\Stylist;
 use App\Models\User; 
@@ -14,18 +15,18 @@ class AppointmentController extends Controller
 {
     public function index()
     {
-        $upcomingAppointments = Auth::user()->appointments()
-            ->upcoming()
-            ->with(['service', 'stylist'])
+        // GUNAKAN VIEW untuk upcoming appointments
+        $upcomingAppointments = AppointmentDetail::where('customer_id', Auth::id())
+            ->where('jadwal', '>=', now()->toDateString())
             ->orderBy('jadwal')
             ->orderBy('jam_mulai')
             ->get();
 
-        $pastAppointments = Auth::user()->appointments()
-            ->past()
-            ->with(['service', 'stylist'])
-            ->orderBy('jadwal')
-            ->orderBy('jam_mulai')
+        // GUNAKAN VIEW untuk past appointments
+        $pastAppointments = AppointmentDetail::where('customer_id', Auth::id())
+            ->where('jadwal', '<', now()->toDateString())
+            ->orderBy('jadwal', 'desc')
+            ->orderBy('jam_mulai', 'desc')
             ->paginate(10);
 
         return view('appointments.index', compact('upcomingAppointments', 'pastAppointments'));
@@ -40,9 +41,8 @@ class AppointmentController extends Controller
             ? Service::find($request->service_id) 
             : null;
 
-        $appointments = Auth::user()->appointments()
-            ->with(['service', 'stylist'])
-            ->get();
+        // GUNAKAN VIEW
+        $appointments = AppointmentDetail::where('customer_id', Auth::id())->get();
 
         return view('appointments.create', compact(
             'services',
@@ -131,5 +131,4 @@ class AppointmentController extends Controller
         return redirect()->route('admin.transaksi.index')
             ->with('success', 'Transaksi / Appointment berhasil dihapus!');
     }
-
 }
