@@ -194,6 +194,9 @@ Route::middleware(['auth', 'role:admin'])
         */
         Route::get('/users', [AdminController::class, 'users'])->name('users');
         Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+
+        Route::get('/riwayat', [AdminController::class, 'showActivityLogs'])
+        ->name('riwayat.index');
     });
 
 /*

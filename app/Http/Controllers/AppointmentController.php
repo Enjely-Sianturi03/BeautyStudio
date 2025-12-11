@@ -12,9 +12,6 @@ use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
 {
-    /**
-     * Display a listing of user's appointments.
-     */
     public function index()
     {
         $upcomingAppointments = Auth::user()->appointments()
@@ -34,26 +31,10 @@ class AppointmentController extends Controller
         return view('appointments.index', compact('upcomingAppointments', 'pastAppointments'));
     }
 
-    /**
-     * Show the form for creating a new appointment.
-     */
-    // public function create(Request $request)
-    // {
-    //     $services = Service::active()->get();
-    //     $stylists = Stylist::active()->get();
-        
-    //     $selectedService = null;
-    //     if ($request->has('service_id')) {
-    //         $selectedService = Service::find($request->service_id);
-    //     }
-
-    //     return view('appointments.create', compact('services', 'stylists', 'selectedService'));
-    // }
-
     public function create(Request $request)
     {
         $services = Service::active()->get();
-        $stylists = User::where('role', 'pegawai')->get(); // ✅ Perbaikan
+        $stylists = User::where('role', 'pegawai')->get(); 
 
         $selectedService = $request->has('service_id') 
             ? Service::find($request->service_id) 
@@ -71,47 +52,51 @@ class AppointmentController extends Controller
         ));
     }
 
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'service_id' => 'required|exists:services,id',
+            'jadwal' => 'required|date|after_or_equal:today',
+            'jam_mulai' => 'required|date_format:H:i',
+            'stylist_id' => 'nullable|exists:users,id',
+            'payment_method' => 'nullable|string',
+            'payment_proof' => 'nullable|image|max:2048',
+        ]);
 
-    /**
-     * Store a newly created appointment WITH PAYMENT.
-     */
-public function store(Request $request)
-{
-    $request->validate([
-        'service_id' => 'required|exists:services,id',
-        'jadwal' => 'required|date',
-        'jam_mulai' => 'required',
-        'payment_method' => 'nullable|string',
-        'payment_proof' => 'nullable|image|max:2048',
-    ]);
+        // Create appointment
+        $appointment = Appointment::create([
+            'user_id' => Auth::id(),
+            'service_id' => $request->service_id,
+            'jadwal' => $request->jadwal,
+            'jam_mulai' => $request->jam_mulai,
+            'jam_selesai' => $request->jam_selesai,
+            'stylist_id' => $request->stylist_id,
+            'status' => 'pending',
+        ]);
 
-    $appointment = new Appointment();
-    $appointment->user_id = Auth::id(); // ✅ ambil user login
-    $appointment->service_id = $request->service_id;
-    $appointment->jadwal = $request->jadwal;
-    $appointment->jam_mulai = $request->jam_mulai;
-    $appointment->jam_selesai = $request->jam_selesai ?? null;
-    $appointment->status = 'pending';
-    $appointment->save();
+        // Simpan transaksi jika ada pembayaran
+        if ($request->payment_method || $request->hasFile('payment_proof')) {
+            $paymentProofPath = null;
+            
+            if ($request->hasFile('payment_proof')) {
+                $paymentProofPath = $request->file('payment_proof')
+                    ->store('payment_proofs', 'public');
+            }
 
-    // Simpan pembayaran ke transaksi, jika ada
-    if ($request->payment_method || $request->hasFile('payment_proof')) {
-        $transaksi = new Transaksi();
-        $transaksi->appointment_id = $appointment->id;
-        $transaksi->service_id = $appointment->service_id;
-        $transaksi->user_id = Auth::id();
-        $transaksi->payment_method = $request->payment_method ?? null;
-        if ($request->hasFile('payment_proof')) {
-            $transaksi->payment_proof = $request->file('payment_proof')->store('payment_proofs', 'public');
+            Transaksi::create([
+                'appointment_id' => $appointment->id,
+                'service_id' => $appointment->service_id,
+                'user_id' => Auth::id(),
+                'payment_method' => $request->payment_method,
+                'payment_proof' => $paymentProofPath,
+                'status' => $request->payment_method ? 'paid' : 'pending',
+                'date' => $appointment->jadwal,
+            ]);
         }
-        $transaksi->status = $request->payment_method ? 'paid' : 'pending';
-        $transaksi->date = $appointment->jadwal;
-        $transaksi->save();
+
+        return redirect()->route('appointments.index')
+            ->with('success', 'Appointment berhasil dibuat!');
     }
-
-    return redirect()->route('appointments.index')->with('success', 'Appointment berhasil dibuat!');
-}
-
     /**
      * Display the specified appointment.
      */

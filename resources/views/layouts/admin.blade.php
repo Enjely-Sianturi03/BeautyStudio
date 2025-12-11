@@ -47,6 +47,10 @@
         class="block py-2 px-3 rounded hover:bg-pink-400 {{ request()->routeIs('admin.tips.*') ? 'bg-pink-500' : '' }}">
         Tips & Artikel
       </a>
+      <a href="{{ route('admin.riwayat.index') }}"
+        class="block py-2 px-3 rounded hover:bg-pink-400 {{ request()->routeIs('admin.riwayat.*') ? 'bg-pink-500' : '' }}">
+        Riwayat
+      </a>
 
 
     </nav>

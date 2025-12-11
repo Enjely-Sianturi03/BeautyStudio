@@ -31,10 +31,11 @@ class Appointment extends Model
     ];
 
     protected $casts = [
-        // 🚨 PERBAIKAN: Mengganti 'appointment_date' dengan 'jadwal' dan 'jam_mulai'
         'jadwal' => 'date',
-        'jam_mulai' => 'datetime', // Casting ke datetime agar menjadi objek Carbon yang bisa diformat.
-        'jam_selesai' => 'datetime', // Tambahkan casting untuk jam_selesai
+        // 'jam_mulai' => 'datetime', 
+        // 'jam_selesai' => 'datetime', 
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     // RELATIONS

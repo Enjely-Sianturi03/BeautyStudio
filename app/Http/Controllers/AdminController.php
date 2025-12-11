@@ -7,22 +7,18 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User; 
 use App\Models\Service;
 use App\Models\Transaksi;
+use App\Models\Appointment;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
-    /**
-     * Menampilkan dashboard utama admin dengan statistik.
-     */
     public function index()
     {
-        // Statistik Summary
         $totalCustomers = User::where('role', 'customer')->count();
         $totalServices = Service::count();
         
-        // Menghitung jadwal hari ini (asumsi Model Jadwal ada dan memiliki kolom 'mulai_at')
         $totalSchedulesToday = \App\Models\Appointment::whereDate('jadwal', now()->toDateString())->count();
         
-        // Menghitung pendapatan bulan ini
         $revenueThisMonth = \DB::table('transaksi as t')
                             ->join('appointments as a', 't.appointment_id', '=', 'a.id')
                             ->join('services as s', 'a.service_id', '=', 's.id')
@@ -30,13 +26,11 @@ class AdminController extends Controller
                             ->whereYear('t.created_at', now()->year)
                             ->sum('s.harga');
 
-        // Data Pelanggan Terbaru (5 data)
         $latestCustomers = User::where('role', 'customer')
                              ->latest()
                              ->take(5)
                              ->get();
 
-        // Mengembalikan view admin.dashboard dengan semua data statistik dan daftar pelanggan
         return view('admin.dashboard', compact(
             'totalCustomers',
             'totalServices',
@@ -46,17 +40,8 @@ class AdminController extends Controller
         ));
     }
 
-
-    // ====================================================================
-    // 1. KELOLA PELANGGAN (Model User)
-    // ====================================================================
-
-    /**
-     * Menampilkan daftar pelanggan dengan paginasi.
-     */
     public function pelangganIndex()
     {
-        // Ambil data pelanggan (role 'customer') dengan 10 item per halaman
         $data = User::whereIn('role', ['customer', 'pegawai'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
@@ -65,12 +50,8 @@ class AdminController extends Controller
         return view('admin.pelanggan.index', compact('data'));
     }
 
-    /**
-     * Menyimpan pelanggan baru (User dengan role 'customer').
-     */
     public function pelangganStore(Request $request)
     {
-        // Validasi input
         $request->validate([
             'name' => 'required|string|max:255',
             'telepon' => 'nullable|string|max:15',
@@ -79,7 +60,6 @@ class AdminController extends Controller
             'password' => 'required|string|min:8',
         ]);
 
-        // Buat User baru sebagai Pelanggan
         User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -93,34 +73,25 @@ class AdminController extends Controller
                          ->with('success', 'Pelanggan berhasil ditambahkan.');
     }
 
-    /**
-     * Memperbarui data pelanggan (Quick Save).
-     */
     public function pelangganUpdate(Request $request, User $pelanggan)
     {
-        // Asumsi $pelanggan adalah instance dari User Model
         $request->validate([
             'name' => 'required|string|max:255',
-            // Tambahkan validasi untuk field lain yang ingin diupdate
         ]);
 
         $pelanggan->update([
             'name' => $request->name,
-            'telepon' => $request->telepon, // Anda harus mengirim field ini melalui hidden input atau form lain
-            'email' => $request->email,     // Anda harus mengirim field ini melalui hidden input atau form lain
-            'alamat' => $request->alamat,   // Anda harus mengirim field ini melalui hidden input atau form lain
+            'telepon' => $request->telepon, 
+            'email' => $request->email,     
+            'alamat' => $request->alamat,  
         ]);
 
         return redirect()->route('admin.pelanggan.index')
                          ->with('success', 'Data pelanggan berhasil diperbarui.');
     }
 
-    /**
-     * Menghapus pelanggan.
-     */
     public function pelangganDestroy(User $pelanggan)
     {
-        // Hapus semua transaksi terkait pelanggan ini
         Transaksi::where('customer_id', $pelanggan->id)->delete();
         
         $pelanggan->delete();
@@ -129,25 +100,13 @@ class AdminController extends Controller
                          ->with('success', 'Pelanggan berhasil dihapus.');
     }
 
-
-    // ====================================================================
-    // 2. KELOLA LAYANAN (Model Service)
-    // ====================================================================
-
-    /**
-     * Menampilkan daftar layanan dengan paginasi.
-     */
     public function layananIndex()
     {
-        // Ambil data layanan dengan 10 item per halaman
         $data = Service::orderBy('nama', 'asc')->paginate(10);
         
         return view('admin.layanan.index', compact('data'));
     }
 
-    /**
-     * Menyimpan layanan baru.
-     */
     public function layananStore(Request $request)
     {
         $request->validate([
@@ -163,12 +122,8 @@ class AdminController extends Controller
                          ->with('success', 'Layanan berhasil ditambahkan.');
     }
 
-    /**
-     * Menghapus layanan.
-     */
     public function layananDestroy(Service $layanan)
     {
-        // Hapus semua transaksi terkait layanan ini (jika ada relasi)
         Transaction::where('service_id', $layanan->id)->delete();
 
         $layanan->delete();
@@ -179,9 +134,36 @@ class AdminController extends Controller
 
     public function jadwalIndex()
     {
-        $appointments = Appointment::with(['user', 'service', 'stylist'])->get(); // eager load
-        $staff = User::where('role', 'pegawai')->get(); // ambil semua pegawai/staf
+        $appointments = Appointment::with(['user', 'service', 'stylist'])->get(); 
+        $staff = User::where('role', 'pegawai')->get(); 
 
         return view('admin.jadwal.index', compact('appointments', 'staff'));
+    }
+
+    public function showActivityLogs()
+    {
+        $cancellation_activities = [
+            'APPOINTMENT_CANCELLED',
+            'TRANSACTION_CANCELLED', 
+            'USER_DELETED',       
+            'SERVICE_DELETED',      
+            'APPOINTMENT_DELETED',  
+        ];
+
+        $logs = DB::table('activity_logs as al')
+                ->join('users as u', 'al.user_id', '=', 'u.id')
+                ->select([
+                    'al.id',
+                    'al.activity_type',
+                    'al.description',
+                    'al.created_at',
+                    'u.name AS user_name',
+                    'u.role AS user_role'
+                ])
+                ->whereIn('al.activity_type', $cancellation_activities)
+                ->orderBy('al.created_at', 'desc')
+                ->paginate(20);
+
+        return view('admin.riwayat.index', compact('logs'));
     }
 }

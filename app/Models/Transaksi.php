@@ -9,12 +9,17 @@ class Transaksi extends Model
     protected $table = 'transaksi';
 
     protected $fillable = [
-        'user_id',      // ← ganti dari pelanggan_id menjadi user_id
-        'jadwal_id',
-        'total',
-        'metode',
+        'appointment_id',
+        'service_id',
+        'user_id',
+        'payment_method',
+        'payment_proof',
         'status',
-        'dibayar_at'
+        'date',
+    ];
+
+    protected $casts = [
+        'date' => 'date',
     ];
 
     // Relasi ke User (pelanggan)
